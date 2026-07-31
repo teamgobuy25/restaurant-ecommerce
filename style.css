@@ -1046,3 +1046,25 @@ h1, h2, h3, h4, p, span, a {
     border-radius: 12px;
   }
 }
+
+
+/* --- NEWSLETTER MOBILE OVERFLOW FIX --- */
+@media (max-width: 600px) {
+  .newsletter-card {
+    padding: 24px 16px; /* Prevents edge-to-edge overflow inside the glassmorphism container */
+    overflow: hidden;   /* Keeps all child elements strictly within the section borders */
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column; /* Stacks input and button vertically */
+    gap: 12px;             /* Adds clean vertical spacing between input and button */
+    width: 100%;
+  }
+
+  .newsletter-form input[type="email"],
+  .newsletter-form button {
+    width: 100% !important; /* Forces full width so the button won't poke out */
+    box-sizing: border-box; /* Ensures padding doesn't push elements past 100% width */
+  }
+}
