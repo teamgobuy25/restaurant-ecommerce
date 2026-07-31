@@ -38,13 +38,13 @@
    ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -893,4 +893,111 @@ img {
   .hero-title { font-size: 2.5rem; }
   .cart-drawer { width: 100%; }
   .super-header { display: none; }
+}
+
+img, picture, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Bad */
+.row {
+  display: flex;
+  width: 1000px; /* Fixed width breaks mobile */
+}
+
+/* Good */
+.row {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to stack on small screens */
+  gap: 1rem;
+  width: 100%;
+}
+
+.row-item {
+  flex: 1 1 300px; /* Expands to fill, shrinks when under 300px */
+  max-width: 100%;  /* Prevents blowout */
+}
+
+/* Bad: Content inside can force 1fr to expand past the screen */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Good: Forces items to shrink down to 0 if needed, avoiding overflow */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+}
+
+h1, h2, h3, h4, p, span, a {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+
+/* Base Section Setup */
+.products-section {
+  width: 100%;
+  padding: 2rem 0; /* Padding top/bottom only, let container handle horizontal */
+}
+
+/* Fix for the 'shrunk' container */
+.section-container {
+  width: 100%;
+  max-width: 1200px; /* Constrains desktop, expands full width on mobile */
+  margin: 0 auto;
+  padding-left: 1rem;  /* Small padding so content doesn't touch screen edges */
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* Header layout: Stack on mobile, side-by-side on desktop */
+.products-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Filter tabs wrapper: Scrollable horizontally if tabs overflow screen */
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+}
+
+/* Ensure buttons don't shrink uncomfortably */
+.tab-btn {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+}
+
+/* Dynamic Grid fix for dishes */
+.products-grid {
+  display: grid;
+  /* Automatically wraps items on mobile, max 1 column if screen < 300px */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Desktop layout switch */
+@media (min-width: 768px) {
+  .section-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .products-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
 }

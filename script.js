@@ -11,7 +11,7 @@ const DISHES = [
     category: 'nigerian',
     price: 18.50,
     oldPrice: 22.00,
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80',
+    image: 'jallof2.jpg',
     description: 'Long-grain parboiled rice cooked in rich tomato-pepper reduction, infused with woodsmoke flavor and served with tender spicy beef Suya.'
   },
   {
@@ -21,7 +21,7 @@ const DISHES = [
     category: 'ethiopian',
     price: 19.00,
     oldPrice: null,
-    image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=600&q=80',
+    image: 'ethio.jpg',
     description: 'Slow-simmered chicken stew infused with Berbere spices, Niter Kibbeh spiced butter, boiled eggs, served with authentic fermented teff Injera.'
   },
   {
@@ -31,7 +31,7 @@ const DISHES = [
     category: 'cameroonian',
     price: 21.00,
     oldPrice: 25.00,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80',
+    image: 'cam3.jpg',
     description: 'Traditional Cameroonian dish made of stewed nuts, washed bitter leaves, tender beef, and grilled prawns served with fried ripe plantains.'
   },
   {
@@ -41,7 +41,7 @@ const DISHES = [
     category: 'nigerian',
     price: 17.50,
     oldPrice: null,
-    image: 'https://images.unsplash.com/photo-1541518763669-27fef04b14e8?auto=format&fit=crop&w=600&q=80',
+    image: 'egusi2.jpeg',
     description: 'Rich melon seed soup cooked with spinach, stockfish, goat meat, and red palm oil, paired with fluffy, warm pounded yam.'
   }
 ];
