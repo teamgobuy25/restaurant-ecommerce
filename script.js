@@ -248,3 +248,26 @@ function initFormHandlers() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
+
+// Mobile Slide-Out Menu Toggle Logic
+document.addEventListener('DOMContentLoaded', () => {
+  const openBtn = document.getElementById('mobileMenuOpen');
+  const closeBtn = document.getElementById('mobileMenuClose');
+  const overlay = document.getElementById('mobileMenuOverlay');
+  const drawer = document.getElementById('mobileMenuDrawer');
+
+  if (openBtn && drawer && overlay) {
+    openBtn.addEventListener('click', () => {
+      drawer.classList.add('active');
+      overlay.classList.add('active');
+    });
+
+    const closeMenu = () => {
+      drawer.classList.remove('active');
+      overlay.classList.remove('active');
+    };
+
+    closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+  }
+});
