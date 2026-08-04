@@ -11,7 +11,7 @@ const DISHES = [
     category: 'nigerian',
     price: 18.50,
     oldPrice: 22.00,
-    image: 'jallof2.jpg',
+    image: 'kilishi2.jpg',
     description: 'Long-grain parboiled rice cooked in rich tomato-pepper reduction, infused with woodsmoke flavor and served with tender spicy beef Suya.'
   },
   {

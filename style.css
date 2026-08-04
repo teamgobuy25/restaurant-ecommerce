@@ -48,7 +48,7 @@ html, body {
 }
 
 body {
-  font-family: var(--font-primary);
+  font-family: Century goothic;
   background-color: var(--color-surface-primary);
   color: var(--color-text-primary);
   line-height: 1.5;
