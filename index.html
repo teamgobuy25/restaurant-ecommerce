@@ -258,7 +258,7 @@
         </svg>
       </div>
 
-      <div class="promo-container">
+      <!-- <div class="promo-container">
         <div class="promo-content">
           <span class="urgency-tag">WEEKEND FEAST DISCOUNT</span>
           <h2 class="promo-title">Family Banquet Feast Box</h2>
@@ -275,7 +275,143 @@
         <div class="promo-image">
           <img src="frnds.png" alt="African Feast Bundle">
         </div>
-      </div>
+      </div> -->
+
+      <style>
+  /* Base Mobile Styles (Stack everything vertically) */
+  .promo-container {
+    display: flex;
+    flex-direction: column-reverse; /* Puts text below the image on mobile */
+    gap: 24px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .promo-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center text and button on mobile */
+    text-align: center;
+  }
+
+  /* Image scales perfectly and stops shrinking */
+  .promo-image {
+    width: 100%;
+  }
+
+  .promo-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px; /* Optional styling */
+  }
+
+  /* Typography & Tags */
+  .urgency-tag {
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  .promo-title {
+    font-size: 1.8rem; /* Scaled down for mobile screens */
+    margin: 12px 0;
+  }
+
+  /* Countdown Grid */
+  .countdown-timer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px 0;
+  }
+
+  .time-block {
+    background: #f4f4f4; /* Placeholder background */
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .time-block span {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .time-block label {
+    font-size: 0.75rem;
+  }
+
+  /* Full-width call to action on mobile */
+  .btn-accent {
+    display: inline-block;
+    width: 100%;
+    max-width: 300px;
+    padding: 14px;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+
+  /* Desktop Styles (Screens wider than 768px) */
+  @media (min-width: 768px) {
+    .promo-container {
+      flex-direction: row; /* Side-by-side layout */
+      align-items: center;
+      gap: 40px;
+      padding: 40px;
+    }
+
+    .promo-content {
+      flex: 1;
+      align-items: flex-start; /* Left-align for desktop */
+      text-align: left;
+    }
+
+    .promo-image {
+      flex: 1;
+    }
+
+    .promo-title {
+      font-size: 2.5rem; /* Larger font for desktop */
+    }
+
+    .countdown-timer {
+      margin: 24px 0;
+    }
+
+    .btn-accent {
+      width: auto; /* Shrinks button back to text size on desktop */
+      padding: 14px 28px;
+    }
+  }
+</style>
+
+<div class="promo-container">
+  <div class="promo-content">
+    <span class="urgency-tag">WEEKEND FEAST DISCOUNT</span>
+    <h2 class="promo-title">Family Banquet Feast Box</h2>
+    <p>Get 30% off our Pan-African Celebration Feast Bundle including Jollof, Injera with Doro Wat, and Cameroonian Plantain Ndolé.</p>
+    
+    <div class="countdown-timer" id="countdown">
+      <div class="time-block"><span id="hours">08</span><label>Hours</label></div>
+      <div class="time-block"><span id="minutes">19</span><label>Mins</label></div>
+      <div class="time-block"><span id="seconds">42</span><label>Secs</label></div>
+    </div>
+
+    <a href="#products" class="btn btn-accent">Claim Feast Box Now</a>
+  </div>
+  <div class="promo-image">
+    <img src="frnds.png" alt="African Feast Bundle">
+  </div>
+</div>
 
       <!-- SHAPE DIVIDER 2 Bottom: Angular Geometric Slant -->
       <div class="shape-divider slant-bottom">
@@ -388,7 +524,7 @@
           <article class="blog-card">
             <div class="blog-thumb">
               <span class="blog-pill">Culinary History</span>
-              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Jollof History">
+              <img src="jallof5.jpeg" alt="Jollof History">
             </div>
             <div class="blog-content">
               <span class="meta">July 18, 2026 • 5 min read</span>
@@ -401,7 +537,7 @@
           <article class="blog-card">
             <div class="blog-thumb">
               <span class="blog-pill">Spice Science</span>
-              <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80" alt="Ethiopian Berbere">
+              <img src="ethio.jpg" alt="Ethiopian Berbere">
             </div>
             <div class="blog-content">
               <span class="meta">July 10, 2026 • 6 min read</span>
@@ -414,7 +550,7 @@
           <article class="blog-card">
             <div class="blog-thumb">
               <span class="blog-pill">Cameroon Heritage</span>
-              <img src="https://images.unsplash.com/photo-1547496502-affa22d38842?auto=format&fit=crop&w=600&q=80" alt="Ndolé Prep">
+              <img src="cam.jpg" alt="Ndolé Prep">
             </div>
             <div class="blog-content">
               <span class="meta">June 29, 2026 • 4 min read</span>
