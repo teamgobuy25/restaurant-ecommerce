@@ -14,6 +14,7 @@
   --color-text-primary: #1C120C;
   --color-text-muted: #6B5E54;
   --color-text-light: #FFFDF9;
+  --terracotta: #C85A32; --border: #E8DDCF;
 
   --color-accent-primary: #D96B27; /* Rich Terracotta */
   --color-accent-gold: #E5A93C;    /* Warm Gold */
@@ -192,9 +193,11 @@ img {
    2. MAIN HEADER & LOGO PLACEHOLDER
    ========================================================================== */
 .main-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 1000;
+  right: 0;
+  left: 0;
+  z-index: 100;
   background: rgba(255, 253, 249, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -622,12 +625,27 @@ img {
 /* ==========================================================================
    7. PROMO BANNER SECTION
    ========================================================================== */
+
 .promo-section {
   position: relative;
-  background-color: var(--color-surface-brand);
+  background: url('frnds.png') center/cover no-repeat;
   color: white;
   padding: 120px 24px;
+  overflow: hidden;
 }
+
+#overlay-div
+{
+  background-color: #000;
+  opacity: .7;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+
 .promo-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -834,7 +852,7 @@ img {
   bottom: 0;
   width: 400px;
   background: white;
-  z-index: 2001;
+  z-index: 12001;
   transform: translateX(100%);
   transition: transform var(--transition-smooth);
   display: flex;
@@ -1067,4 +1085,75 @@ h1, h2, h3, h4, p, span, a {
     width: 100% !important; /* Forces full width so the button won't poke out */
     box-sizing: border-box; /* Ensures padding doesn't push elements past 100% width */
   }
+}
+
+
+
+
+
+
+    /* Product Cards */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .product-card { background: #fff; border: 1px solid #dcdcdc; border-radius: 12px; padding: 1rem; position: relative; }
+    .product-thumb img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
+    .badge-discount { position: absolute; top: 1.5rem; left: 1.5rem; background: #1b4d3e; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    .product-title { font-size: 1.1rem; margin: 0.5rem 0; }
+    .product-price { font-weight: 800; font-size: 1.2rem; color: #1b4d3e; }
+    .product-price .old { text-decoration: line-through; color: #888; font-size: 0.9rem; margin-left: 0.5rem; }
+    .add-to-cart-btn { background: var(--terracotta); color: #fff; border: none; width: 100%; padding: 0.6rem; border-radius: 999px; cursor: pointer; font-weight: 700; margin-top: 0.5rem; }
+
+    /* Cart Drawer */
+    .cart-drawer { position: fixed; right: -400px; top: 0; width: 360px; height: 100%; background: #fff; box-shadow: -4px 0 12px rgba(0,0,0,0.1); transition: 0.3s; z-index: 100; display: flex; flex-direction: column; padding: 1rem; }
+    .cart-drawer.active { right: 0; }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .cart-body { flex: 1; overflow-y: auto; padding: 1rem 0; }
+    .cart-item { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+    .cart-item img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
+    .cart-footer { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .btn-primary { background: var(--terracotta); color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 999px; cursor: pointer; font-weight: 700; }
+    .full-width { width: 100%; }
+
+    /* Checkout Modal Overlay */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 200; }
+    .modal-overlay.active { display: flex; }
+    .checkout-card { background: #fff; width: 90%; max-width: 500px; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); text-align: center; }
+    .paypal-box { background: #F1ECE4; border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+    .notice-checkbox { font-size: 0.85rem; margin: 1rem 0; text-align: left; }
+
+
+
+    /* Header Spacing Adjustments */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Nav links styling */
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* Even spacing between navigation items */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #C85A32;
+}
+
+/* Reduced width for desktop search box */
+.search-wrapper.desktop-only {
+  max-width: 200px; /* Reduced from default width to give nav items more space */
+  flex: 1;
 }

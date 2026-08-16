@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adorad Afro | Authentic African Groceries & Goods</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS for Working Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* DESIGN SYSTEM */
+    :root {
+      --primary: #d96b27;
+      --primary-dark: #b34e12;
+      --accent-yellow: #f4ab25;
+      --accent-green: #2d5a27;
+      --bg-main: #fcf9f2;
+      --bg-surface: #ffffff;
+      --bg-card: #f7f2e7;
+      --text-main: #2b2118;
+      --text-muted: #6e645a;
+      --border-color: rgba(217, 107, 39, 0.15);
+      --font-serif: 'Volkhov', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --shadow-sm: 0 4px 12px rgba(43, 33, 24, 0.05);
+      --shadow-md: 0 8px 24px rgba(43, 33, 24, 0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+    
+    /* HEADER & NAVIGATION */
+    .site-header {
+      position: sticky;
+      top: 0;
+      background: rgba(252, 249, 242, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .logo-badge {
+      background: var(--accent-yellow);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    /* DESKTOP MENU */
+    .desktop-nav {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .desktop-nav a {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      transition: color 0.2s;
+    }
+    .desktop-nav a:hover, .desktop-nav a.active {
+      color: var(--primary);
+    }
+
+    /* HEADER ACTIONS */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .cart-btn {
+      position: relative;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--primary);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+    }
+    .hamburger-btn span {
+      width: 24px;
+      height: 2.5px;
+      background: var(--text-main);
+      border-radius: 2px;
+    }
+
+    /* MOBILE SLIDER MENU */
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 280px;
+      height: 100vh;
+      background: var(--bg-surface);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+      z-index: 2000;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-drawer.open { left: 0; }
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1500;
+      display: none;
+    }
+    .drawer-overlay.active { display: block; }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .drawer-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .drawer-menu a {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      padding: 60px 0 40px;
+      text-align: center;
+      background: radial-gradient(circle at 50% 10%, rgba(244, 171, 37, 0.15) 0%, rgba(252, 249, 242, 0) 70%);
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: 2.8rem;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+    }
+
+    /* PRODUCT GRID */
+    .products-section { padding: 40px 0 60px; }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .card {
+      background: var(--bg-surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .card-img-wrap {
+      height: 340px;
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      /* object-fit: cover; */
+    }
+    .card-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--accent-green);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+    .card-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    .btn-add {
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-add:hover { background: var(--primary-dark); }
+
+    /* PARALLAX SECTION */
+    .parallax-section {
+      height: 380px;
+      background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=80');
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 0 20px;
+      margin: 40px 0;
+    }
+    .parallax-content h2 {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      color: var(--accent-yellow);
+    }
+    .parallax-content p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 24px;
+      font-weight: 300;
+    }
+    .btn-light {
+      background: white;
+      color: var(--text-main);
+      padding: 12px 28px;
+      border-radius: 25px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* SHIPPING ESTIMATOR BAR */
+    .shipping-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 30px;
+      margin: 60px 0;
+    }
+    .shipping-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .shipping-info h3 {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .shipping-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .shipping-calc {
+      display: flex;
+      gap: 10px;
+    }
+    .shipping-input {
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      outline: none;
+      font-family: inherit;
+    }
+
+    /* TESTIMONIALS SECTION */
+    .testimonials-section {
+      padding: 40px 0 60px;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stars { color: var(--accent-yellow); margin-bottom: 12px; }
+    .quote { font-style: italic; font-size: 0.92rem; color: var(--text-main); margin-bottom: 16px; }
+    .author-name { font-weight: 700; font-size: 0.9rem; }
+    .author-location { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* WORKING MAP SECTION */
+    .map-section {
+      padding: 40px 0 60px;
+    }
+    .map-container {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .store-details {
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .store-details h3 {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+    }
+    .store-details p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    #map {
+      width: 100%;
+      height: 320px;
+      z-index: 1;
+    }
+
+    /* FOOTER */
+    .site-footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 40px 0 24px;
+      font-size: 0.9rem;
+    }
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .footer-links a { color: var(--text-muted); }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-bottom {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding-top: 24px;
+    }
+
+    /* RESPONSIVE BREAKPOINTS */
+    @media (max-width: 992px) {
+      .grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .map-container { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .hamburger-btn { display: flex; }
+      .grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+      .parallax-section { background-attachment: scroll; }
+      .shipping-box { flex-direction: column; align-items: flex-start; }
+      .footer-content { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE OVERLAY & SLIDER -->
+  <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header">
+      <div class="logo">Adorad Afro<span class="logo-badge"></span></div>
+      <button onclick="toggleMenu()" style="font-size: 1.5rem; color: var(--text-muted);">✕</button>
+    </div>
+    <ul class="drawer-menu">
+      <li><a href="#" onclick="toggleMenu()">Home</a></li>
+      <li><a href="#" onclick="toggleMenu()">Store</a></li>
+      <li><a href="#" onclick="toggleMenu()">Product</a></li>
+      <li><a href="#" onclick="toggleMenu()">About</a></li>
+      <li><a href="#" onclick="toggleMenu()">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- STICKY HEADER -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        Adorad Afro <span class="logo-badge"></span>
+      </a>
+
+      <ul class="desktop-nav">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Store</a></li>
+        <li><a href="#">Product</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+
+      <div class="header-actions">
+        <button class="cart-btn" aria-label="View Cart">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge">3</span>
+        </button>
+
+        <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Open Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>Taste of the Continent</h1>
+      <p>Premium imported West & East African spices, fresh produce, authentic grains, and traditional beauty provisions delivered directly to your doorstep.</p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS GRID -->
+  <section class="container products-section">
+    <div class="section-title">
+      <span>Featured Provisions</span>
+    </div>
+
+    <div class="grid">
+      <!-- ROW 1 -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">African Red Oil</span>
+          <img src="https://africannatural.s3.us-east-1.amazonaws.com/product/179/NOnuL4PdZktWHul8ppevQdxPihvEJrvi7rYngrew.webp" alt="Jollof Rice Spice">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Authentic Red Oil Blend</div>
+          <div class="card-desc">Hand-mixed smoked paprika, Scotch bonnet, thyme, and bay leaves (250g).</div>
+          <div class="card-footer">
+            <div class="card-price">$8.50</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">African Bitter Kola</span>
+          <img src="https://thumbs.dreamstime.com/b/pile-bitter-kola-nuts-isolated-transparent-background-biodiversity-types-plants-cultural-symbol-many-ethnic-groups-388008427.jpg" alt="Fresh Plantains">
+        </div>
+        <div class="card-body">
+          <div class="card-title"> Bitter Kola Orginal</div>
+          <div class="card-desc">Naturally sweetened, perfectly ripened yellow plantains sourced directly from Ghana.</div>
+          <div class="card-footer">
+            <div class="card-price">$14.00</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Organic</span>
+          <img src="https://gtworld.de/cdn/shop/files/natural-health-harmony-batana-oil-with-vitamin-e-hair-oil-250ml-797120-709796.png?v=1749035094" alt="Raw Shea Butter">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Unrefined Raw Shea Butter</div>
+          <div class="card-desc">100% pure organic ivory shea butter extracted by women's co-ops in Northern Nigeria.</div>
+          <div class="card-footer">
+            <div class="card-price">$12.00</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Flour & Grains</span>
+          <img src="https://cdn.webshopapp.com/shops/225503/files/490621833/image.jpg" alt="Cassava Flour">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Golden Cassava Garri</div>
+          <div class="card-desc">Finely roasted cassava grains. Ideal for eba or enjoying cold with peanuts.</div>
+          <div class="card-footer">
+            <div class="card-price">$6.80</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Oil & Fats</span>
+          <img src="https://africandelightstore.com/cdn/shop/files/Palm_oil_dende_oil_african_cooking_oil_red_palm_oil_red_oil_ghana_palm_oil_Main_1L_1200x.jpg?v=1761939735" alt="Red Palm Oil">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Pure Red Palm Oil</div>
+          <div class="card-desc">Unrefined, cold-pressed red palm oil rich in carotene and natural antioxidants (1L).</div>
+          <div class="card-footer">
+            <div class="card-price">$11.50</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Fufu Plantain Floor</span>
+          <img src="https://melcom.com/media/catalog/product/cache/d0e1b0d5c74d14bfa9f7dd43ec52d082/6/4/64032a.jpg" alt="Chin Chin">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Fufu from Nigeria</div>
+          <div class="card-desc">Traditional fufu flavored with freshly grated nutmeg (400g pack).</div>
+          <div class="card-footer">
+            <div class="card-price">$5.50</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3 -->
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Tea & Coffee</span>
+          <img src="https://www.surulerefoods.com/cdn/shop/files/AGEGEBREAD.jpg?v=1756449881" alt="Hibiscus Tea">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Dried Hibiscus Leaves (Zobo)</div>
+          <div class="card-desc">Whole sun-dried calyxes for brewing traditional Zobo beverage or Sorrel tea.</div>
+          <div class="card-footer">
+            <div class="card-price">$7.00</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Seasoning</span>
+          <img src="https://afromarket.pl/wp-content/uploads/2021/11/8.jpg" alt="Suya Spice">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Kankankan Suya Pepper</div>
+          <div class="card-desc">Authentic spicy peanut powder rub for beef skewers and grilled meats.</div>
+          <div class="card-footer">
+            <div class="card-price">$9.00</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img-wrap">
+          <span class="card-tag">Skincare</span>
+          <img src="https://www.everfreshbutchers.co.uk/cdn/shop/products/TropicalSunNigerianBrownBeans1.5Kg.jpg?v=1620124846" alt="African Black Soap">
+        </div>
+        <div class="card-body">
+          <div class="card-title">Traditional African Black Soap</div>
+          <div class="card-desc">Handmade using cocoa pod ash, unrefined palm kernel oil, and wild honey.</div>
+          <div class="card-footer">
+            <div class="card-price">$8.00</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARALLAX SECTION -->
+  <section class="parallax-section">
+    <div class="parallax-content">
+      <h2>Sourced with Heritage & Integrity</h2>
+      <p>We work directly with local farmers and artisans across West and East Africa to bring unadulterated flavors straight to your family's table.</p>
+      <button class="btn-light">Learn Our Story</button>
+    </div>
+  </section>
+
+  <!-- SHIPPING CALCULATOR / INFO -->
+  <section class="container">
+    <div class="shipping-section">
+      <div class="shipping-box">
+        <div class="shipping-info">
+          <h3>🚚 Fast Nationwide & Express Cold-Pack Shipping</h3>
+          <p>Free standard delivery on fresh goods for orders above $75. Local pickup available.</p>
+        </div>
+        <div class="shipping-calc">
+          <input type="text" placeholder="Enter ZIP or Postcode" class="shipping-input">
+          <button class="btn-add" onclick="alert('Standard Shipping: $5.99 (2-3 Days)')">Calculate</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS SECTION -->
+  <section class="container testimonials-section">
+    <div class="section-title">
+      <span>Community Feedback</span>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★ ★ ★ ★ ★</div>
+        <p class="quote">"Finding genuine Garri and fresh plantains used to mean a 2-hour drive. Adorad Afro delivers it fresh to my doorstep in 2 days!"</p>
+        <div class="author-name">Amina K.</div>
+        <div class="author-location">Verified Buyer • London</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★ ★ ★ ★ ★</div>
+        <p class="quote">"The Suya Pepper is as authentic as the skewers I used to buy in Lagos. Absolutely spot on flavors!"</p>
+        <div class="author-name">Emeka O.</div>
+        <div class="author-location">Verified Buyer • Atlanta</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★ ★ ★ ★ ★</div>
+        <p class="quote">"Top quality raw shea butter and rapid shipping. The packaging for perishable goods was excellent."</p>
+        <div class="author-name">Sarah M.</div>
+        <div class="author-location">Verified Buyer • Toronto</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKING INTERACTIVE MAP SECTION -->
+  <section class="container map-section">
+    <div class="section-title">
+      <span>Visit Our Flagship Store</span>
+    </div>
+    <div class="map-container">
+      <div class="store-details">
+        <h3>Adorad Afro Storefront</h3>
+        <p><strong>Address:</strong> 142 African Heritage Way, London</p>
+        <p><strong>Hours:</strong> Mon - Sat: 9:00 AM - 7:00 PM</p>
+        <p><strong>Phone:</strong> +44 20 7946 0990</p>
+        <p style="margin-top: 12px; font-size: 0.82rem; color: var(--primary-dark);"><strong>Pickup Info:</strong> Online orders ready in 2 hours.</p>
+      </div>
+      <!-- Interactive Leaflet Map -->
+      <div id="map"></div>
+    </div>
+  </section>
+
+
+
+  
+
+
+
+  <!-- SIMPLE FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="logo">
+          Adorad Afro <span class="logo-badge"></span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Store</a></li>
+          <li><a href="#">Product</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        © 2026 Adorad Afro & Fine Provisions. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS SCRIPTS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Mobile Drawer Toggle
+    function toggleMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      const overlay = document.getElementById('overlay');
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    // Initialize Working OpenStreetMap with Leaflet.js
+    document.addEventListener("DOMContentLoaded", function() {
+      // Coordinates for London storefront location placeholder
+      const lat = 51.5074;
+      const lng = -0.1278;
+
+      const map = L.map('map').setView([lat, lng], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup('<b>Adorad Afro Storefront</b><br>142 African Heritage Way')
+        .openPopup();
+    });
+  </script>
+</body>
+</html>

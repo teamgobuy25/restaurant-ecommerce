@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AFRO-EATS Admin Dashboard</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #ffffff; color: #1a0f0d; margin: 0; padding: 2rem; }
+    .admin-card { max-width: 650px; margin: 0 auto; border: 1px solid #e8ddcf; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #c85a32; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-weight: 600; margin-bottom: 0.35rem; font-size: 0.9rem; }
+    input, textarea, select { width: 100%; padding: 0.75rem; border: 1px solid #e8ddcf; border-radius: 6px; box-sizing: border-box; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-submit { background: #c85a32; color: #fff; border: none; padding: 0.85rem 1.5rem; border-radius: 999px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 1rem; }
+    .btn-submit:hover { background: #b04c27; }
+    #msg { margin-top: 1rem; font-weight: 600; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="admin-card">
+    <h2>Add New Product</h2>
+    <form id="addProductForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" id="brand" value="AFRO-EATS" required>
+        </div>
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="name" placeholder="e.g. Smoked Party Jollof" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Price ($)</label>
+          <input type="number" step="0.01" id="price" placeholder="18.50" required>
+        </div>
+        <div class="form-group">
+          <label>Old Price ($) (Optional)</label>
+          <input type="number" step="0.01" id="oldPrice" placeholder="22.00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="url" id="image" placeholder="https://images.unsplash.com/..." required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" rows="3" placeholder="Enter product details..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Upload Product</button>
+    </form>
+    <div id="msg"></div>
+  </div>
+
+  <script>
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        brand: document.getElementById('brand').value,
+        name: document.getElementById('name').value,
+        price: parseFloat(document.getElementById('price').value),
+        oldPrice: document.getElementById('oldPrice').value ? parseFloat(document.getElementById('oldPrice').value) : null,
+        image: document.getElementById('image').value,
+        description: document.getElementById('description').value
+      };
+
+      const res = await fetch('http://localhost/Auto-Source/swiss/api.php?action=add_product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      console.log( res )
+      const data = await res.json();
+      const msg = document.getElementById('msg');
+      if(data.success) {
+        msg.style.color = 'green';
+        msg.textContent = 'Product successfully uploaded to store!';
+        document.getElementById('addProductForm').reset();
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = 'Error: ' + (data.error || 'Failed to upload product.');
+      }
+    });
+  </script>
+</body>
+</html>

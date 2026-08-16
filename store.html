@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFRO TASTE | Culinary Market Store</title>
+  <style>
+    :root {
+      --primary: #C85A32;
+      --bg-cream: #FAF6F0;
+      --text-dark: #1A0F0D;
+      --border: #E8DDCF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-cream); color: var(--text-dark); }
+    a { text-decoration: none; color: inherit; }
+
+    /* Header CSS Integration */
+    .main-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .brand-logo-placeholder { display: flex; align-items: center; gap: 0.5rem; font-weight: 900; color: var(--primary); }
+    .nav-list { display: flex; gap: 2rem; list-style: none; }
+    .nav-link { font-weight: 600; }
+    .nav-link.active, .nav-link:hover { color: var(--primary); }
+    .search-wrapper { position: relative; width: 200px; }
+    .search-wrapper input { width: 100%; padding: 0.5rem 0.5rem 0.5rem 2rem; border-radius: 999px; border: 1px solid var(--border); font-size: 0.85rem; }
+    .search-wrapper svg { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: #888; }
+    .user-actions { display: flex; align-items: center; gap: 1rem; }
+
+    /* Store Page Layout */
+    .store-container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+    .store-header { margin-bottom: 2rem; }
+    .store-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem; }
+    
+    .search-group { display: flex; gap: 0.5rem; flex: 1; max-width: 400px; }
+    .search-group input { flex: 1; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; }
+    
+    .btn-search { background: var(--primary); color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    select { padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-weight: 600; }
+
+    /* Products Grid */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .product-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .product-thumb img { width: 100%; height: 200px; object-fit: cover; }
+    .product-details { padding: 1rem; }
+    .product-brand { font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: 700; }
+    .product-title { font-size: 1.1rem; margin: 0.25rem 0; font-weight: 700; color: var(--text-dark); }
+    .product-price { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo-placeholder">
+        <div class="logo-text-group">
+          <span class="logo-name">AFRO TASTE</span>
+        </div>
+      </a>
+
+      <nav class="main-nav desktop-only">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="store.html" class="nav-link active">Store</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="search-wrapper desktop-only">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Search..." id="headerSearchInput">
+      </div>
+
+      <div class="user-actions desktop-only">
+        <a href="cart.html" class="nav-link">Basket (<span id="cartCount">0</span>)</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- STORE MAIN CONTENT -->
+  <main class="store-container">
+    <div class="store-header">
+      <h1>Culinary Market Store</h1>
+      <p>Explore authentic dishes and ingredients across Central & West Africa.</p>
+    </div>
+
+    <!-- CONTROLS & FILTERS -->
+    <div class="store-controls">
+      <div class="search-group">
+        <input type="text" id="storeSearchInput" placeholder="Search dishes by name or category...">
+        <button class="btn-search" onclick="applyFilters()">Search</button>
+      </div>
+
+      <div>
+        <label for="sortOrder" style="font-weight:600; margin-right: 0.5rem;">Alphabetical Sort:</label>
+        <select id="sortOrder" onchange="applyFilters()">
+          <option value="asc">A to Z</option>
+          <option value="desc">Z to A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div class="products-grid" id="productsGrid">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </main>
+
+  <script>
+    let productsList = [];
+
+    // Fetch initial 20 products from API
+    async function loadStoreProducts() {
+      try {
+        const response = await fetch('http://localhost/Auto-Source/swiss/api.php?action=get_products&limit=20');
+        productsList = await response.json();
+        applyFilters();
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    }
+
+    // Filter and Sort Handler
+    function applyFilters() {
+      const query = document.getElementById('storeSearchInput').value.toLowerCase();
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      let filtered = productsList.filter(product => 
+        product.name.toLowerCase().includes(query) || 
+        (product.description && product.description.toLowerCase().includes(query))
+      );
+
+      filtered.sort((a, b) => {
+        return sortOrder === 'asc' 
+          ? a.name.localeCompare(b.name) 
+          : b.name.localeCompare(a.name);
+      });
+
+      renderProducts(filtered);
+    }
+
+    // Render cards and link to individual product.html?id=X page
+    function renderProducts(items) {
+      const grid = document.getElementById('productsGrid');
+      
+      if(items.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No products match your search criteria.</p>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(product => `
+        <div class="product-card" onclick="window.location.href='product.html?id=${product.id}'">
+          <div class="product-thumb">
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+          </div>
+          <div class="product-details">
+            <span class="product-brand">${product.brand || 'AFRO TASTE'}</span>
+            <h3 class="product-title">${product.name}</h3>
+            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Initialize Store
+    document.addEventListener('DOMContentLoaded', loadStoreProducts);
+  </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AFRO-EATS Store & Checkout</title>
+  <style>
+    :root { --terracotta: #C85A32; --border: #E8DDCF; }
+    body { font-family: system-ui, sans-serif; background: #FAF6F0; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Product Cards */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .product-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; position: relative; }
+    .product-thumb img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; }
+    .badge-discount { position: absolute; top: 1.5rem; left: 1.5rem; background: #1b4d3e; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    .product-title { font-size: 1.1rem; margin: 0.5rem 0; }
+    .product-price { font-weight: 800; font-size: 1.2rem; color: #1b4d3e; }
+    .product-price .old { text-decoration: line-through; color: #888; font-size: 0.9rem; margin-left: 0.5rem; }
+    .add-to-cart-btn { background: var(--terracotta); color: #fff; border: none; width: 100%; padding: 0.6rem; border-radius: 999px; cursor: pointer; font-weight: 700; margin-top: 0.5rem; }
+
+    /* Cart Drawer */
+    .cart-drawer { position: fixed; right: -400px; top: 0; width: 360px; height: 100%; background: #fff; box-shadow: -4px 0 12px rgba(0,0,0,0.1); transition: 0.3s; z-index: 100; display: flex; flex-direction: column; padding: 1rem; }
+    .cart-drawer.active { right: 0; }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .cart-body { flex: 1; overflow-y: auto; padding: 1rem 0; }
+    .cart-item { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+    .cart-item img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
+    .cart-footer { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .btn-primary { background: var(--terracotta); color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 999px; cursor: pointer; font-weight: 700; }
+    .full-width { width: 100%; }
+
+    /* Checkout Modal Overlay */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 200; }
+    .modal-overlay.active { display: flex; }
+    .checkout-card { background: #fff; width: 90%; max-width: 500px; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); text-align: center; }
+    .paypal-box { background: #F1ECE4; border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+    .notice-checkbox { font-size: 0.85rem; margin: 1rem 0; text-align: left; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>AFRO-EATS Dynamic Storefront</h2>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3>Your Taste Basket (<span id="cartDrawerCount">0</span>)</h3>
+      <button class="close-drawer" id="closeCart" onclick="closeCartDrawer()">✕</button>
+    </div>
+    <div class="cart-body" id="cartItemsContainer">
+      <div class="empty-cart-msg">Your Taste Basket is currently empty.</div>
+    </div>
+    <div class="cart-footer">
+      <div class="subtotal-row" style="display:flex; justify-content:space-between; font-weight:bold;">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">$0.00</span>
+      </div>
+      <p class="shipping-note" style="font-size:0.8rem; color:#666;">Temperature-controlled packaging calculated at checkout.</p>
+      <button class="btn btn-primary full-width" onclick="openCheckoutModal()">Proceed to Secure Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Checkout PayPal Modal -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="checkout-card">
+      <h3>Complete Your Checkout</h3>
+      <p>Order Total: <strong id="checkoutTotal">$0.00</strong></p>
+
+      <!-- PayPal Panel Form -->
+      <div class="paypal-box">
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="paypalForm">
+          <!-- PayPal Configuration Variables -->
+          <input type="hidden" name="cmd" value="_xclick">
+          <!-- ADMIN PAYPAL EMAIL PLACEHOLDER -->
+          <input type="hidden" name="business" value="admin-merchant@afroeats.com">
+          <input type="hidden" name="item_name" value="AFRO-EATS Order">
+          <input type="hidden" name="amount" id="paypalAmount" value="0.00">
+          <input type="hidden" name="currency_code" value="USD">
+          <input type="hidden" name="rm" value="1">
+          <input type="hidden" name="return" value="https://yourdomain.com/order-success.php">
+          <input type="hidden" name="cancel_return" value="https://yourdomain.com/index.html">
+
+          <div class="notice-checkbox">
+            <label>
+              <input type="checkbox" id="acceptReturnNotice" required>
+              I understand that I must click <strong>"Return to Merchant"</strong> on the PayPal website after payment to finalize and log my order.
+            </label>
+          </div>
+
+          <button type="submit" id="paypalSubmitBtn" class="btn btn-primary full-width" disabled>
+            Transfer to PayPal to Complete Payment
+          </button>
+        </form>
+      </div>
+      <button onclick="closeCheckoutModal()" style="margin-top: 1rem; background:none; border:none; cursor:pointer; text-decoration:underline;">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const state = { cart: [], products: [] };
+
+    // Fetch products dynamically from PHP backend
+    async function loadProducts() {
+      try {
+        const res = await fetch('http://localhost/Auto-Source/swiss/api.php?action=get_products');
+        state.products = await res.json();
+        renderProducts();
+      } catch(e) {
+        console.error('Failed to load products from API', e);
+      }
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('productsGrid');
+      container.innerHTML = state.products.map(product => `
+        <div class="product-card">
+          <div class="product-thumb">
+            ${product.oldPrice ? `<span class="badge-discount">SAVE ${(100 - (product.price/product.oldPrice * 100)).toFixed(0)}%</span>` : ''}
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+          </div>
+          <div class="product-details">
+            <span class="product-brand">${product.brand}</span>
+            <h3 class="product-title">${product.name}</h3>
+            <div class="product-price">
+              <span>$${product.price.toFixed(2)}</span>
+              ${product.oldPrice ? `<span class="old">$${product.oldPrice.toFixed(2)}</span>` : ''}
+            </div>
+            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add to Basket</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if(product) {
+        state.cart.push(product);
+        updateCartUI();
+        document.getElementById('cartDrawer').classList.add('active');
+      }
+    }
+
+    function removeFromCart(index) {
+      state.cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const drawerCount = document.getElementById('cartDrawerCount');
+      const container = document.getElementById('cartItemsContainer');
+      const subtotalEl = document.getElementById('cartSubtotal');
+
+      drawerCount.textContent = state.cart.length;
+
+      if (state.cart.length === 0) {
+        container.innerHTML = `<div class="empty-cart-msg">Your Taste Basket is currently empty.</div>`;
+        subtotalEl.textContent = '$0.00';
+        return;
+      }
+
+      container.innerHTML = state.cart.map((item, index) => `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+          </div>
+          <button onclick="removeFromCart(${index})" style="color:#C83214; font-size:0.8rem; font-weight:700; border:none; background:none; cursor:pointer;">Remove</button>
+        </div>
+      `).join('');
+
+      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+      subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cartDrawer').classList.remove('active');
+    }
+
+    // Checkout Modal Handlers
+    function openCheckoutModal() {
+      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+      if (subtotal === 0) return alert('Your cart is empty!');
+
+      document.getElementById('checkoutTotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('paypalAmount').value = subtotal.toFixed(2);
+      document.getElementById('checkoutModal').classList.add('active');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    // Notice confirmation checkbox listener
+    document.getElementById('acceptReturnNotice').addEventListener('change', function(e) {
+      document.getElementById('paypalSubmitBtn').disabled = !e.target.checked;
+    });
+
+    // Initialize application
+    loadProducts();
+  </script>
+</body>
+</html>

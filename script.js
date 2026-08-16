@@ -50,15 +50,16 @@ const DISHES = [
 let state = {
   cart: [],
   wishlistCount: 5,
-  activeFilter: 'all'
+  activeFilter: 'all', 
+  products: []
 };
 
 // DOM Initialization
 document.addEventListener('DOMContentLoaded', () => {
   initSuperHeader();
-  renderProducts();
+  // renderProducts();
   initFilterTabs();
-  initCartDrawer();
+  // initCartDrawer();
   initQuickView();
   initCountdown();
   initFormHandlers();
@@ -73,32 +74,6 @@ function initSuperHeader() {
   });
 }
 
-/* 2. Product Rendering & Filter Engine */
-function renderProducts() {
-  const container = document.getElementById('productsGrid');
-  const filtered = state.activeFilter === 'all' 
-    ? DISHES 
-    : DISHES.filter(d => d.category === state.activeFilter);
-
-  container.innerHTML = filtered.map(product => `
-    <div class="product-card">
-      <div class="product-thumb">
-        ${product.oldPrice ? `<span class="badge-discount">SAVE ${(100 - (product.price/product.oldPrice * 100)).toFixed(0)}%</span>` : ''}
-        <img src="${product.image}" alt="${product.name}" loading="lazy">
-        <button class="quick-view-btn" onclick="openQuickViewModal('${product.id}')">Quick View</button>
-      </div>
-      <div class="product-details">
-        <span class="product-brand">${product.brand}</span>
-        <h3 class="product-title">${product.name}</h3>
-        <div class="product-price">
-          <span>$${product.price.toFixed(2)}</span>
-          ${product.oldPrice ? `<span class="old">$${product.oldPrice.toFixed(2)}</span>` : ''}
-        </div>
-        <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add to Basket</button>
-      </div>
-    </div>
-  `).join('');
-}
 
 function initFilterTabs() {
   const tabs = document.querySelectorAll('.tab-btn');
@@ -107,76 +82,9 @@ function initFilterTabs() {
       tabs.forEach(t => t.classList.remove('active'));
       e.target.classList.add('active');
       state.activeFilter = e.target.dataset.filter;
-      renderProducts();
+      // renderProducts();
     });
   });
-}
-
-/* 3. Cart Drawer Mechanics */
-function initCartDrawer() {
-  const trigger = document.getElementById('cartTrigger');
-  const closeBtn = document.getElementById('closeCart');
-  const overlay = document.getElementById('cartOverlay');
-  const drawer = document.getElementById('cartDrawer');
-
-  const openCart = () => {
-    drawer.classList.add('active');
-    overlay.classList.add('active');
-  };
-
-  const closeCart = () => {
-    drawer.classList.remove('active');
-    overlay.classList.remove('active');
-  };
-
-  trigger.addEventListener('click', openCart);
-  closeBtn.addEventListener('click', closeCart);
-  overlay.addEventListener('click', closeCart);
-}
-
-function addToCart(productId) {
-  const product = DISHES.find(p => p.id === productId);
-  state.cart.push(product);
-  updateCartUI();
-  
-  // Open Cart Drawer automatically on add
-  document.getElementById('cartDrawer').classList.add('active');
-  document.getElementById('cartOverlay').classList.add('active');
-}
-
-function updateCartUI() {
-  const cartCount = document.getElementById('cartCount');
-  const drawerCount = document.getElementById('cartDrawerCount');
-  const container = document.getElementById('cartItemsContainer');
-  const subtotalEl = document.getElementById('cartSubtotal');
-
-  cartCount.textContent = state.cart.length;
-  drawerCount.textContent = state.cart.length;
-
-  if (state.cart.length === 0) {
-    container.innerHTML = `<div class="empty-cart-msg">Your Taste Basket is currently empty.</div>`;
-    subtotalEl.textContent = '$0.00';
-    return;
-  }
-
-  container.innerHTML = state.cart.map((item, index) => `
-    <div class="cart-item">
-      <img src="${item.image}" alt="${item.name}">
-      <div class="cart-item-info">
-        <div class="cart-item-title">${item.name}</div>
-        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
-      </div>
-      <button onclick="removeFromCart(${index})" style="color:#C83214; font-size:0.8rem; font-weight:700;">Remove</button>
-    </div>
-  `).join('');
-
-  const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-}
-
-function removeFromCart(index) {
-  state.cart.splice(index, 1);
-  updateCartUI();
 }
 
 /* 4. Quick View Modal */
@@ -271,3 +179,109 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.addEventListener('click', closeMenu);
   }
 });
+
+
+
+    // const state = { cart: [], products: [] };
+
+    
+    // Fetch products dynamically from PHP backend
+    async function loadProducts() {
+      try {
+        const res = await fetch('http://localhost/Auto-Source/swiss/api.php?action=get_products');
+        state.products = await res.json();
+        renderProducts();
+      } catch(e) {
+        console.error('Failed to load products from API', e);
+      }
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('productsGrid');
+      container.innerHTML = state.products.map(product => `
+        <div class="product-card">
+          <div class="product-thumb">
+            ${product.oldPrice ? `<span class="badge-discount">SAVE ${(100 - (product.price/product.oldPrice * 100)).toFixed(0)}%</span>` : ''}
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+          </div>
+          <div class="product-details">
+            <span class="product-brand">${product.brand}</span>
+            <h3 class="product-title">${product.name}</h3>
+            <div class="product-price">
+              <span>$${product.price.toFixed(2)}</span>
+              ${product.oldPrice ? `<span class="old">$${product.oldPrice.toFixed(2)}</span>` : ''}
+            </div>
+            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add to Basket</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(productId) {
+      const product = state.products.find(p => p.id === productId);
+      if(product) {
+        state.cart.push(product);
+        updateCartUI();
+        document.getElementById('cartDrawer').classList.add('active');
+      }
+    }
+
+    function removeFromCart(index) {
+      state.cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const drawerCount = document.getElementById('cartDrawerCount');
+      const container = document.getElementById('cartItemsContainer');
+      const subtotalEl = document.getElementById('cartSubtotal');
+
+      drawerCount.textContent = state.cart.length;
+
+      if (state.cart.length === 0) {
+        container.innerHTML = `<div class="empty-cart-msg">Your Taste Basket is currently empty.</div>`;
+        subtotalEl.textContent = '$0.00';
+        return;
+      }
+
+      container.innerHTML = state.cart.map((item, index) => `
+        <div class="cart-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+          </div>
+          <button onclick="removeFromCart(${index})" style="color:#C83214; font-size:0.8rem; font-weight:700; border:none; background:none; cursor:pointer;">Remove</button>
+        </div>
+      `).join('');
+
+      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+      subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cartDrawer').classList.remove('active');
+    }
+
+    // Checkout Modal Handlers
+    function openCheckoutModal() {
+      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+      if (subtotal === 0) return alert('Your cart is empty!');
+
+      document.getElementById('checkoutTotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('paypalAmount').value = subtotal.toFixed(2);
+      document.getElementById('checkoutModal').classList.add('active');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    // Notice confirmation checkbox listener
+    document.getElementById('acceptReturnNotice').addEventListener('change', function(e) {
+      document.getElementById('paypalSubmitBtn').disabled = !e.target.checked;
+    });
+
+    // Initialize application
+    loadProducts();
+  

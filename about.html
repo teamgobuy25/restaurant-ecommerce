@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFRO TASTE | About Us</title>
+  <style>
+    :root {
+      --primary: #C85A32;
+      --primary-dark: #A54422;
+      --bg-cream: #FAF6F0;
+      --text-dark: #1A0F0D;
+      --border: #E8DDCF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-cream); color: var(--text-dark); line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+
+    /* Header CSS */
+    .main-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .brand-logo-placeholder { display: flex; align-items: center; gap: 0.5rem; font-weight: 900; color: var(--primary); font-size: 1.25rem; }
+    .nav-list { display: flex; gap: 2rem; list-style: none; }
+    .nav-link { font-weight: 600; transition: color 0.2s; }
+    .nav-link.active, .nav-link:hover { color: var(--primary); }
+    .search-wrapper { position: relative; width: 200px; }
+    .search-wrapper input { width: 100%; padding: 0.5rem 0.5rem 0.5rem 2rem; border-radius: 999px; border: 1px solid var(--border); font-size: 0.85rem; background: var(--bg-cream); }
+    .search-wrapper svg { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: #888; }
+    .user-actions { display: flex; align-items: center; gap: 1rem; }
+
+    /* Mobile Drawer */
+    .mobile-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .mobile-drawer-overlay.active { opacity: 1; visibility: visible; }
+    .mobile-drawer { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: #fff; z-index: 201; transition: 0.3s; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .mobile-drawer.active { right: 0; }
+    .mobile-nav-list { list-style: none; display: flex; flex-direction: column; gap: 1.25rem; font-weight: 700; font-size: 1.1rem; }
+    .mobile-nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
+
+    /* About Hero with Background Image Overlay */
+    .about-hero { 
+      position: relative;
+      background: linear-gradient(rgba(26, 15, 13, 0.75), rgba(26, 15, 13, 0.75)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      padding: 5rem 1.5rem; 
+      text-align: center; 
+      color: #fff;
+    }
+    .about-hero h1 { font-size: 2.75rem; color: #fff; margin-bottom: 0.75rem; font-weight: 800; }
+    .about-hero p { max-width: 650px; margin: 0 auto; color: #E8DDCF; font-size: 1.15rem; }
+
+    .about-container { max-width: 1280px; margin: 3rem auto; padding: 0 1.5rem; }
+
+    /* Story Section Split with Image */
+    .story-card { 
+      background: #fff; 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      overflow: hidden; 
+      margin-bottom: 3rem; 
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .story-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .story-content { padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; }
+    .story-content h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.8rem; }
+
+    /* Country Grid */
+    .culinary-regions { margin-top: 2rem; }
+    .culinary-regions h2 { text-align: center; margin-bottom: 2rem; font-size: 2rem; }
+    .country-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    
+    .country-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .country-flag-bar { height: 6px; }
+    .bg-ng { background: linear-gradient(to right, #008751 33%, #fff 33%, #fff 66%, #008751 66%); }
+    .bg-cm { background: linear-gradient(to right, #007A5E 33%, #CE1126 33%, #CE1126 66%, #FCD116 66%); }
+    .bg-cd { background: linear-gradient(to right, #007FFF 40%, #FCD116 40%, #FCD116 50%, #CE1126 50%); }
+
+    .country-img-wrapper { height: 200px; width: 100%; overflow: hidden; }
+    .country-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .country-card:hover .country-img-wrapper img { transform: scale(1.05); }
+
+    .country-body { padding: 1.75rem; flex: 1; display: flex; flex-direction: column; }
+    .country-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; margin-bottom: 0.75rem; }
+    .country-desc { color: #555; margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .signature-dishes { background: var(--bg-cream); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-top: auto; }
+    .signature-dishes h4 { font-size: 0.85rem; text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+    .signature-dishes ul { list-style: square inside; font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
+
+    /* Values Banner */
+    .values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 3rem; text-align: center; }
+    .value-box { background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid var(--border); }
+    .value-box h3 { color: var(--primary); margin-bottom: 0.5rem; }
+
+    @media (max-width: 850px) {
+      .story-card { grid-template-columns: 1fr; }
+      .story-img-wrapper { height: 250px; }
+    }
+
+    @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .mobile-nav-toggle { display: block; }
+      .about-hero h1 { font-size: 2rem; }
+      .story-content { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo-placeholder">
+        <span class="logo-name">AFRO TASTE</span>
+      </a>
+
+      <nav class="main-nav desktop-only">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="store.html" class="nav-link">Store</a></li>
+          <li><a href="about.html" class="nav-link active">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="search-wrapper desktop-only">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Search dishes..." id="searchInput">
+      </div>
+
+      <div class="user-actions desktop-only">
+        <a href="cart.html" class="nav-link">Basket (<span id="cartCount">0</span>)</a>
+      </div>
+
+      <button class="mobile-nav-toggle mobile-only" onclick="toggleMobileDrawer(true)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer-overlay" id="drawerOverlay" onclick="toggleMobileDrawer(false)"></div>
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:900; color:var(--primary); font-size:1.25rem;">AFRO TASTE</span>
+      <button onclick="toggleMobileDrawer(false)" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+    <ul class="mobile-nav-list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="store.html">Store</a></li>
+      <li><a href="about.html" style="color:var(--primary);">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </aside>
+
+  <!-- HERO SECTION WITH BACKGROUND IMAGE -->
+  <section class="about-hero">
+    <h1>Our Heritage & Flavor Journey</h1>
+    <p>Connecting food lovers with the rich, authentic, and diverse culinary traditions of West and Central Africa.</p>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="about-container">
+    
+    <!-- BRAND STORY WITH SIDE IMAGE -->
+    <article class="story-card">
+      <div class="story-img-wrapper">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80" alt="African Spices and Dishes Preparation" loading="lazy">
+      </div>
+      <div class="story-content">
+        <h2>Preserving Culinary Excellence</h2>
+        <p>At <strong>AFRO TASTE Culinary Market</strong>, we are dedicated to celebrating the authentic flavors of West and Central Africa. Food in our culture represents more than sustenance—it is a symbol of hospitality, family unity, and ancestral pride. We source native herbs, spices, and ingredients to craft iconic recipes from Nigeria, Cameroon, and the Democratic Republic of Congo.</p>
+      </div>
+    </article>
+
+    <!-- CULINARY REGIONS GRID -->
+    <section class="culinary-regions">
+      <h2>Three Regions, One Extraordinary Table</h2>
+      
+      <div class="country-grid">
+        <!-- NIGERIA -->
+        <div class="country-card">
+          <div class="country-flag-bar bg-ng"></div>
+          <div class="country-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80" alt="Nigerian Jollof Rice" loading="lazy">
+          </div>
+          <div class="country-body">
+            <h3 class="country-title">🇳🇬 Nigerian Cuisine</h3>
+            <p class="country-desc">Celebrated for bold, fiery spices, rich native soups, and aromatic rice preparations cooked over open flames.</p>
+            <div class="signature-dishes">
+              <h4>Signature Offerings</h4>
+              <ul>
+                <li>Smoked Party Jollof Rice</li>
+                <li>Egusi & Pounded Yam</li>
+                <li>Spicy Beef Suya Skewers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMEROON -->
+        <div class="country-card">
+          <div class="country-flag-bar bg-cm"></div>
+          <div class="country-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Cameroonian Braised Fish and Greens" loading="lazy">
+          </div>
+          <div class="country-body">
+            <h3 class="country-title">🇨🇲 Cameroonian Cuisine</h3>
+            <p class="country-desc">Famous for intricate spice blends incorporating country onions, native nuts, and traditional leafy greens.</p>
+            <div class="signature-dishes">
+              <h4>Signature Offerings</h4>
+              <ul>
+                <li>Authentic Ndolé with Shrimp</li>
+                <li>Yellow Achu Soup</li>
+                <li>Poisson Braisé (Grilled Fish)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONGO -->
+        <div class="country-card">
+          <div class="country-flag-bar bg-cd"></div>
+          <div class="country-img-wrapper">
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80" alt="Congolese Stew and Plantains" loading="lazy">
+          </div>
+          <div class="country-body">
+            <h3 class="country-title">🇨🇩 Congolese Cuisine</h3>
+            <p class="country-desc">Rich in savory stews, cassava delicacies, and red palm oil dishes seasoned with traditional peppers.</p>
+            <div class="signature-dishes">
+              <h4>Signature Offerings</h4>
+              <ul>
+                <li>Poulet Moambé (Palm Stew)</li>
+                <li>Fumbwa with Salted Fish</li>
+                <li>Soft Kwanga (Cassava Bread)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORE VALUES -->
+    <section class="values-grid">
+      <div class="value-box">
+        <h3>100% Authentic</h3>
+        <p>Prepared using native ingredients, palm oils, and ancestral cooking techniques.</p>
+      </div>
+      <div class="value-box">
+        <h3>Fresh Daily</h3>
+        <p>Every soup, stew, and grill platter is cooked fresh to preserve natural flavors.</p>
+      </div>
+      <div class="value-box">
+        <h3>Shared Culture</h3>
+        <p>Connecting diaspora communities with comforting tastes of home.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function toggleMobileDrawer(open) {
+      document.getElementById('mobileDrawer').classList.toggle('active', open);
+      document.getElementById('drawerOverlay').classList.toggle('active', open);
+    }
+  </script>
+</body>
+</html>
