@@ -53,6 +53,187 @@
     <div id="msg"></div>
   </div>
 
+
+  <!-- ADMIN AUTHENTICATION MODAL -->
+<div id="adminModalOverlay" class="admin-modal-overlay">
+  <div class="admin-modal-card">
+    <div class="admin-modal-header">
+      <h2>Admin Authentication</h2>
+      <p>Enter the master password to access AFRO TASTE administrative controls.</p>
+    </div>
+    
+    <form id="adminLoginForm" onsubmit="verifyAdminPassword(event)">
+      <div id="adminAuthError" class="admin-error-msg"></div>
+      
+      <div class="admin-input-group">
+        <label for="adminPasswordInput">Password</label>
+        <input 
+          type="password" 
+          id="adminPasswordInput" 
+          placeholder="••••••••" 
+          required 
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button type="submit" id="adminSubmitBtn" class="btn-admin-login">
+        Authenticate
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Lock background scrolling while modal is open */
+  body.modal-locked {
+    overflow: hidden !important;
+  }
+
+  /* Full screen overlay */
+  .admin-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 15, 13, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .admin-modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid #E8DDCF;
+  }
+
+  .admin-modal-header h2 {
+    color: #C85A32;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  .admin-modal-header p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-input-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-input-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    color: #1A0F0D;
+  }
+
+  .admin-input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #E8DDCF;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #FAF6F0;
+  }
+
+  .admin-input-group input:focus {
+    outline: none;
+    border-color: #C85A32;
+    background: #fff;
+  }
+
+  .btn-admin-login {
+    width: 100%;
+    background: #C85A32;
+    color: #fff;
+    border: none;
+    padding: 0.85rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-admin-login:hover {
+    background: #A54422;
+  }
+
+  .admin-error-msg {
+    display: none;
+    padding: 0.75rem;
+    background: #F8D7DA;
+    color: #721C24;
+    border: 1px solid #F5C6CB;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<script>
+  // Lock page body on load
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('modal-locked');
+  });
+
+  // Helper function to sanitize text output (XSS defense)
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+
+  async function verifyAdminPassword(event) {
+    event.preventDefault();
+    
+    const passwordInput = document.getElementById('adminPasswordInput').value;
+    const errorBox = document.getElementById('adminAuthError');
+    const submitBtn = document.getElementById('adminSubmitBtn');
+
+    errorBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Verifying...';
+
+    try {
+      const response = await fetch('https://coodesrc.com/swiss/admin.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: passwordInput })
+      });
+
+      const result = await response.json();
+
+      console.log( "RES", result )
+      if (response.ok && result.success) {
+        // Remove overlay and restore scroll
+        document.getElementById('adminModalOverlay').remove();
+        document.body.classList.remove('modal-locked');
+      } else {
+        errorBox.innerText = escapeHTML(result.message || 'Access Denied.');
+        errorBox.style.display = 'block';
+      }
+    } catch (err) {
+      errorBox.innerText = 'Network or server error occurred.';
+      errorBox.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Authenticate';
+    }
+  }
+</script>
+
   <script>
     document.getElementById('addProductForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -65,7 +246,7 @@
         description: document.getElementById('description').value
       };
 
-      const res = await fetch('http://localhost/Auto-Source/swiss/api.php?action=add_product', {
+      const res = await fetch('https://coodesrc.com/swiss/api.php?action=add_product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
