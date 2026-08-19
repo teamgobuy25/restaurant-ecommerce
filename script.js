@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch products dynamically from PHP backend
     async function loadProducts() {
       try {
-        const res = await fetch('http://localhost/Auto-Source/swiss/api.php?action=get_products');
+        const res = await fetch('/swiss/api.php?action=get_products');
         state.products = await res.json();
         renderProducts();
       } catch(e) {
