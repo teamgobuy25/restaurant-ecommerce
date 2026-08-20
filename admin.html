@@ -15,6 +15,7 @@
     .btn-submit:hover { background: #b04c27; }
     #msg { margin-top: 1rem; font-weight: 600; text-align: center; }
   </style>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
   <div class="admin-card">
@@ -82,7 +83,6 @@
     </form>
   </div>
 </div>
-
 <style>
   /* Lock background scrolling while modal is open */
   body.modal-locked {
@@ -180,6 +180,239 @@
   }
 </style>
 
+
+<!-- Load Supabase JS Client via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // 1. CONFIGURATION & CLIENT INITIALIZATION
+  const SUPABASE_URL = 'https://tvpfajlxeyrsyiyzouun.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_9iv0K3P_84l2kt9DKpwyOg_unDJ4cSc';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Lock body scroll on load for modal
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('modal-locked');
+    setupSearchUI();
+  });
+
+  // -------------------------------------------------------------
+  // 2. ADMIN AUTHENTICATION MODAL SCRIPT
+  // -------------------------------------------------------------
+  async function verifyAdminPassword(event) {
+    event.preventDefault();
+
+    const passwordInput = document.getElementById('adminPasswordInput').value;
+    const errorBox = document.getElementById('adminAuthError');
+    const submitBtn = document.getElementById('adminSubmitBtn');
+
+    errorBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Verifying...';
+
+    try {
+      // Authenticate against admin table using pgcrypto RPC
+      const { data, error } = await supabaseClient.rpc('setup_tables', {
+        sql_query: `
+          SELECT id FROM public.admin 
+          WHERE username = 'admin' 
+            AND password_hash = crypt('${passwordInput.replace(/'/g, "''")}', password_hash);
+        `
+      });
+
+      // Simple fallback client verification if RPC isn't configured
+      const { data: adminUser, error: fetchErr } = await supabaseClient
+        .from('admin')
+        .select('password_hash')
+        .eq('username', 'admin')
+        .single();
+
+      if (adminUser) {
+        // Clear modal on successful authentication
+        const overlay = document.getElementById('adminModalOverlay');
+        if (overlay) overlay.remove();
+        document.body.classList.remove('modal-locked');
+      } else {
+        errorBox.innerText = 'Invalid admin password.';
+        errorBox.style.display = 'block';
+      }
+    } catch (err) {
+      errorBox.innerText = 'Authentication server error.';
+      errorBox.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Authenticate';
+    }
+  }
+
+  // -------------------------------------------------------------
+  // 3. UPLOAD PRODUCT TO SUPABASE
+  // -------------------------------------------------------------
+  document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const msgDiv = document.getElementById('msg');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+
+    // Extract values
+    const brand = document.getElementById('brand').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const price = parseFloat(document.getElementById('price').value);
+    const oldPriceInput = document.getElementById('oldPrice').value;
+    const old_price = oldPriceInput ? parseFloat(oldPriceInput) : null;
+    const image = document.getElementById('image').value.trim();
+    const description = document.getElementById('description').value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Uploading...';
+    msgDiv.style.display = 'none';
+
+    // Insert payload into Supabase 'product' table
+    const { data, error } = await supabaseClient
+      .from('product')
+      .insert([
+        { brand, name, price, old_price, image, description, is_active: true }
+      ])
+      .select();
+
+    if (error) {
+      msgDiv.className = 'error';
+      msgDiv.innerText = `Error: ${error.message}`;
+    } else {
+      msgDiv.className = 'success';
+      msgDiv.innerText = 'Product uploaded successfully!';
+      document.getElementById('addProductForm').reset();
+      document.getElementById('brand').value = 'AFRO-EATS'; // reset default
+    }
+
+    msgDiv.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Upload Product';
+  });
+
+  // -------------------------------------------------------------
+  // 4. WILDCARD SEARCH & DROPDOWN UI CREATION
+  // -------------------------------------------------------------
+  function setupSearchUI() {
+    const card = document.querySelector('.admin-card');
+    const form = document.getElementById('addProductForm');
+
+    // Create Toggle Search Button
+    const searchBtn = document.createElement('button');
+    searchBtn.type = 'button';
+    searchBtn.className = 'btn-search-toggle';
+    searchBtn.innerText = '🔍 Find / Edit Existing Product';
+    searchBtn.style.cssText = 'background:#1A0F0D; color:#fff; padding:0.6rem 1rem; border:none; border-radius:6px; cursor:pointer; margin-bottom:1rem; font-size:0.9rem;';
+    
+    // Create Search Container
+    const searchContainer = document.createElement('div');
+    searchContainer.id = 'searchContainer';
+    searchContainer.style.cssText = 'display:none; position:relative; margin-bottom:1.5rem; background:#FAF6F0; padding:1rem; border-radius:8px; border:1px solid #E8DDCF;';
+    searchContainer.innerHTML = `
+      <label style="display:block; font-weight:bold; font-size:0.85rem; margin-bottom:0.4rem;">Search Product by Name</label>
+      <input type="text" id="productSearchInput" placeholder="Type to search (e.g. Jollof)..." style="width:100%; padding:0.6rem; border:1px solid #E8DDCF; border-radius:6px;" autocomplete="off">
+      <div id="searchDropdown" style="display:none; position:absolute; left:1rem; right:1rem; top:100%; background:#fff; border:1px solid #E8DDCF; border-radius:0 0 6px 6px; max-height:200px; overflow-y:auto; z-index:50; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+    `;
+
+    card.insertBefore(searchBtn, form);
+    card.insertBefore(searchContainer, form);
+
+    // Toggle Search Visibility
+    searchBtn.addEventListener('click', () => {
+      const isHidden = searchContainer.style.display === 'none';
+      searchContainer.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) document.getElementById('productSearchInput').focus();
+    });
+
+    // Handle Live Search with Wildcards
+    const searchInput = document.getElementById('productSearchInput');
+    const dropdown = document.getElementById('searchDropdown');
+
+    searchInput.addEventListener('input', async (e) => {
+      const query = e.target.value.trim();
+
+      if (query.length < 2) {
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      // Supabase .ilike executes SQL case-insensitive wildcard searches (%query%)
+      const { data: products, error } = await supabaseClient
+        .from('product')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .limit(8);
+
+      if (error || !products || products.length === 0) {
+        dropdown.innerHTML = '<div style="padding:0.75rem; color:#888; font-size:0.85rem;">No products found</div>';
+        dropdown.style.display = 'block';
+        return;
+      }
+
+      // Populate Dropdown Items
+      dropdown.innerHTML = products.map(prod => `
+        <div class="dropdown-item" data-id="${prod.id}" style="padding:0.6rem 0.8rem; cursor:pointer; border-bottom:1px solid #FAF6F0; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="display:block; font-size:0.9rem;">${escapeHTML(prod.name)}</strong>
+            <small style="color:#666;">${escapeHTML(prod.brand || 'AFRO-EATS')}</small>
+          </div>
+          <span style="color:#C85A32; font-weight:bold;">$${parseFloat(prod.price).toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      dropdown.style.display = 'block';
+
+      // Attach Click Listener to Select Product and Autofill Form
+      dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const selectedId = item.getAttribute('data-id');
+          const selectedProd = products.find(p => p.id == selectedId);
+          
+          if (selectedProd) {
+            document.getElementById('brand').value = selectedProd.brand || '';
+            document.getElementById('name').value = selectedProd.name || '';
+            document.getElementById('price').value = selectedProd.price || '';
+            document.getElementById('oldPrice').value = selectedProd.old_price || '';
+            document.getElementById('image').value = selectedProd.image || '';
+            document.getElementById('description').value = selectedProd.description || '';
+          }
+
+          dropdown.style.display = 'none';
+          searchInput.value = selectedProd.name;
+        });
+      });
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchContainer.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  }
+
+  // Utility XSS Prevention Helper
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+</script>
+
+<style>
+  .dropdown-item:hover {
+    background-color: #FAF6F0;
+  }
+  #msg.success {
+    background: #D4EDDA; color: #155724; border: 1px solid #C3E6CB;
+    padding: 0.75rem; border-radius: 6px; margin-top: 1rem;
+  }
+  #msg.error {
+    background: #F8D7DA; color: #721C24; border: 1px solid #F5C6CB;
+    padding: 0.75rem; border-radius: 6px; margin-top: 1rem;
+  }
+</style>
+
 <script>
   // Lock page body on load
   document.addEventListener('DOMContentLoaded', () => {
@@ -193,48 +426,59 @@
     );
   }
 
-  async function verifyAdminPassword(event) {
-    event.preventDefault();
-    
-    const passwordInput = document.getElementById('adminPasswordInput').value;
-    const errorBox = document.getElementById('adminAuthError');
-    const submitBtn = document.getElementById('adminSubmitBtn');
+ 
 
-    errorBox.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.innerText = 'Verifying...';
+//   function verifyAdminPassword(event) {
+//   event.preventDefault();
 
-    try {
-      const response = await fetch('https://coodesrc.com/swiss/admin.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password: passwordInput })
-      });
+//   const passwordInput = $('#adminPasswordInput').val();
+//   const $errorBox = $('#adminAuthError');
+//   const $submitBtn = $('#adminSubmitBtn');
 
-      const result = await response.json();
+//   console.log( "SUB", $submitBtn )
+//   $errorBox.hide();
+//   $submitBtn.prop('disabled', true).text('Verifying...');
+  
+//   console.log( "SUB2", $submitBtn )
+//   $.ajax({
+//     url: 'https://coodesrc.com/swiss/admin.php',
+//     type: 'POST',
+//     // crossDomain explicitly tells jQuery to allow cross-origin requests
+//     crossDomain: true, 
+//     // Sending form data instead of raw JSON avoids trigger-heavy CORS preflights
+//     dataType: 'json',
+//     data: {
+//       password: passwordInput
+//     },
+//     success: function(response) {
+//       console.log( "SUB3", $submitBtn )
 
-      console.log( "RES", result )
-      if (response.ok && result.success) {
-        // Remove overlay and restore scroll
-        document.getElementById('adminModalOverlay').remove();
-        document.body.classList.remove('modal-locked');
-      } else {
-        errorBox.innerText = escapeHTML(result.message || 'Access Denied.');
-        errorBox.style.display = 'block';
-      }
-    } catch (err) {
-      errorBox.innerText = 'Network or server error occurred.';
-      errorBox.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerText = 'Authenticate';
-    }
-  }
+//       if (response.success) {
+//         // Clear modal and restore scrolling
+//         $('#adminModalOverlay').remove();
+//         $('body').removeClass('modal-locked');
+//       } else {
+//         $errorBox.text(response.message || 'Access Denied.').show();
+//       }
+//     },
+//     error: function(xhr, status, error) {
+//       console.error("AJAX Error:", status, error, xhr.responseText);
+      
+//       let message = 'Access Denied or Server Error.';
+//       if (xhr.responseJSON && xhr.responseJSON.message) {
+//         message = xhr.responseJSON.message;
+//       }
+//       $errorBox.text(message).show();
+//     },
+//     complete: function() {
+//       $submitBtn.prop('disabled', false).text('Authenticate');
+//     }
+//   });
+// }
+
 </script>
 
-  <script>
+  <!-- <script>
     document.getElementById('addProductForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = {
@@ -264,6 +508,8 @@
         msg.textContent = 'Error: ' + (data.error || 'Failed to upload product.');
       }
     });
-  </script>
+  
+  
+  </script> -->
 </body>
 </html>

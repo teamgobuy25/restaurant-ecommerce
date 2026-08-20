@@ -186,13 +186,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     // Fetch products dynamically from PHP backend
+    // async function loadProducts() {
+    //   try {
+    //     const res = await fetch('https://coodesrc.com/swiss/api.php?action=get_products');
+    //     state.products = await res.json();
+    //     renderProducts();
+    //   } catch(e) {
+    //     console.error('Failed to load products from API', e);
+    //   }
+    // }
+
+
+  const SUPABASE_URL = 'https://tvpfajlxeyrsyiyzouun.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_9iv0K3P_84l2kt9DKpwyOg_unDJ4cSc';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Fetch products dynamically from Supabase database
     async function loadProducts() {
       try {
-        const res = await fetch('https://coodesrc.com/swiss/api.php?action=get_products');
-        state.products = await res.json();
+        // Query Supabase for 8 active products ordered by newest first
+        const { data, error } = await supabaseClient
+          .from('product')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(8);
+          console.log( "DATA", data )
+
+        if (error) throw error;
+
+        // Assign fetched data to state and render
+        state.products = data || [];
         renderProducts();
-      } catch(e) {
-        console.error('Failed to load products from API', e);
+      } catch (e) {
+        console.error('Failed to load products from Supabase:', e.message || e);
       }
     }
 
