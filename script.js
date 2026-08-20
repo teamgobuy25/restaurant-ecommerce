@@ -213,10 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
           .limit(8);
           console.log( "DATA", data )
 
+          console.log( "RENDEER UP", error )
         if (error) throw error;
 
         // Assign fetched data to state and render
         state.products = data || [];
+        window.products = data || [];
+        console.log( "RENDEER", state.products )
         renderProducts();
       } catch (e) {
         console.error('Failed to load products from Supabase:', e.message || e);
@@ -245,10 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addToCart(productId) {
-      const product = state.products.find(p => p.id === productId);
+      const product = window.products.find(p => { 
+        // console.log( "IDs", parseInt(p.id), parseInt(productId) )
+            return parseInt(p.id) === parseInt(productId) 
+      });
+      // console.log( "Hello!!! 111", product )
       if(product) {
         state.cart.push(product);
         updateCartUI();
+        console.log( "Hello!!!" )
         document.getElementById('cartDrawer').classList.add('active');
       }
     }
