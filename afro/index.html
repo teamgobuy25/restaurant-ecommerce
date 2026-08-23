@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfroMarket Global | Authentic African Food, Groceries & Lifestyle</title>
+  <title>Mama Faith Afroshop | Authentic African Food, Groceries & Lifestyle</title>
   <style>
     /* ==========================================================================
        1. AFRO-CENTRIC BRAND DESIGN TOKENS & SYSTEM VARIABLES
@@ -199,6 +199,150 @@
       .site-header .search-container { display: none; }
       .hero-content { padding: 1.5rem; }
     }
+
+    /* GRID LAYOUT */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e8ddcf;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.product-details {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-origin {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-title {
+  font-size: 1rem;
+  margin: 0.25rem 0 0.5rem 0;
+  color: #1a0f0d;
+}
+
+.product-price {
+  font-weight: 700;
+  color: #c85a32;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  background: #1a0f0d;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #c85a32;
+}
+
+/* SLIDE-OUT CART PANEL FROM RIGHT */
+.cart-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+}
+
+.cart-drawer-overlay.active {
+  display: block;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 100%;
+  max-width: 380px;
+  height: 100%;
+  background: #ffffff;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.cart-drawer.active {
+  right: 0;
+}
+
+.cart-drawer-header {
+  padding: 1.25rem;
+  background: #1a0f0d;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-drawer-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.cart-drawer-body {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.cart-drawer-footer {
+  padding: 1.25rem;
+  border-top: 1px solid #e8ddcf;
+  background: #faf6f0;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.btn-cart-checkout {
+  width: 100%;
+  background: #c85a32;
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
@@ -229,7 +373,7 @@
     <header class="site-header">
       <div class="container">
         <a href="/" class="brand-logo" aria-label="AfroMarket Global Homepage">
-          🌴 Afro<span>Market</span>
+          <img src="logo.jpg" alt="" style="width: 3em; height: auto;" srcset=""> Mama<span> Faith</span>
         </a>
 
         <div class="search-container">
@@ -346,52 +490,190 @@
         <h2 id="bestseller-heading" class="section-title">Best Selling Essentials</h2>
         <a href="/bestsellers" style="color:var(--color-accent); font-weight:700;">View All Items →</a>
       </div>
-      <div class="product-grid">
-        <!-- SKU 1 -->
-        <article class="product-card">
-          <span class="product-badge">Top Seller</span>
-          <img class="product-img" src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=400&q=80" alt="Ghanaian Fresh Yam (Box)" loading="lazy">
-          <div class="product-details">
-            <span class="product-origin">Ghana Import</span>
-            <h3 class="product-title">Authentic Pona Yam (Box - approx. 10kg)</h3>
-            <div class="product-price">$42.99</div>
-            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
-          </div>
-        </article>
+      
 
-        <!-- SKU 2 -->
-        <article class="product-card">
-          <img class="product-img" src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=400&q=80" alt="Iru & Egusi Seeds" loading="lazy">
-          <div class="product-details">
-            <span class="product-origin">Nigeria Import</span>
-            <h3 class="product-title">Hand-Pounded Egusi Seeds (500g)</h3>
-            <div class="product-price">$12.50</div>
-            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
-          </div>
-        </article>
+      <!-- CART OVERLAY & SLIDE-OUT PANEL -->
+<div class="cart-drawer-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Your Basket</h3>
+    <button onclick="closeCartDrawer()" class="close-drawer-btn">✕</button>
+  </div>
+  
+  <div class="cart-drawer-body" id="cartItemsContainer">
+    <!-- Dynamic Cart Items Rendered Here -->
+  </div>
 
-        <!-- SKU 3 -->
-        <article class="product-card">
-          <img class="product-img" src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=400&q=80" alt="Pure Red Palm Oil" loading="lazy">
-          <div class="product-details">
-            <span class="product-origin">Cameroon Import</span>
-            <h3 class="product-title">Unrefined Zomi Red Palm Oil (1L)</h3>
-            <div class="product-price">$14.99</div>
-            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
-          </div>
-        </article>
+  <div class="cart-drawer-footer">
+    <div class="cart-total-row">
+      <span>Total:</span>
+      <span id="cartDrawerTotal">$0.00</span>
+    </div>
+    <button class="btn-cart-checkout" onclick="openCartCheckoutModal()">Proceed to Checkout</button>
+  </div>
+</aside>
 
-        <!-- SKU 4 -->
-        <article class="product-card">
-          <img class="product-img" src="https://images.unsplash.com/photo-1528751014936-863e6e7a319c?auto=format&fit=crop&w=400&q=80" alt="Plantain Chips Box" loading="lazy">
-          <div class="product-details">
-            <span class="product-origin">Snack Box</span>
-            <h3 class="product-title">Sweet Crunchy Plantain Chips (Pack of 12)</h3>
-            <div class="product-price">$18.99</div>
-            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
-          </div>
-        </article>
+<!-- PRODUCT GRID CONTAINER -->
+<div id="productGrid" class="product-grid"></div>
+
+<script>
+    // 1. Array of 10 African Store Products
+const productsList = [
+  {
+    id: "prod-001",
+    name: "Unrefined Zomi Red Palm Oil (1L)",
+    origin: "Cameroon Import",
+    price: 14.99,
+    image: "https://homelandflavours.com/cdn/shop/files/c042125_0.png?v=1775473762&width=1920"
+  },
+  {
+    id: "prod-002",
+    name: "Ijebu Garri / Cassava Flakes (2kg)",
+    origin: "Nigeria Import",
+    price: 9.50,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvs1Prp3AOoIarzBbvt5yKBVrhRjofsxziHXEVjGtUdGUy63thz6qLmrA&s=10"
+  },
+  {
+    id: "prod-003",
+    name: "Ghana Sweet Plantain Chips (120g)",
+    origin: "Ghana Import",
+    price: 3.25,
+    image: "https://images.unsplash.com/photo-1621447504864-d8686e12698c?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    id: "prod-004",
+    name: "Organic Raw Egusi / Melon Seeds (500g)",
+    origin: "West Africa",
+    price: 11.99,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5RbGvxYenWeNHOarqeN3RskD_efC8WzvHv2oGDwGq5lqxkqZaQS0bfYM&s=10"
+  },
+  {
+    id: "prod-006",
+    name: "Fresh Whole Yam / Pona (3kg)",
+    origin: "Ghana Import",
+    price: 18.50,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7tU5qmdt6gtoLrN0YIhVCaqqkFneFp2jeZRDb0D5pcA&s=10"
+  },
+  {
+    id: "prod-007",
+    name: "Authentic Suya Pepper Spice Mix (150g)",
+    origin: "Northern Nigeria",
+    price: 6.99,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlmYSAR6yuBcip9VhduzHEluJG5oncI50rZaJnCXwN4A&s=10"
+  },
+  {
+    id: "prod-008",
+    name: "Smoked Catfish / Dried Fish",
+    origin: "Senegal Import",
+    price: 15.20,
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1gHfmwWE4VJVrNqXvwD_Sw6TmkuW-s4YSkIOw81OuNcICEqmhhqa1mc_N&s=10"
+  },
+  {
+    id: "prod-009",
+    name: "Pre-Cooked Golden Beans / Ewa Oloyin (1kg)",
+    origin: "Togo Import",
+    price: 7.80,
+    image: "https://myafricanshop.co.uk/wp-content/uploads/2024/08/61Pfe5j8DYL.jpg"
+  },
+  {
+    id: "prod-010",
+    name: "Milo Chocolate Malt Drink (400g)",
+    origin: "West Africa",
+    price: 6.50,
+    image: "https://zorastore.eu/cdn/shop/products/248.jpg?v=1708008281"
+  }
+];
+
+let cart = JSON.parse(localStorage.getItem('afro_cart')) || [];
+
+// 2. Dynamic Product Grid Rendering
+function renderProducts() {
+  const container = document.getElementById('productGrid');
+  if (!container) return;
+
+  container.innerHTML = productsList.map(prod => `
+    <article class="product-card">
+      <img class="product-img" src="${prod.image}" alt="${prod.name}" loading="lazy">
+      <div class="product-details">
+        <span class="product-origin">${prod.origin}</span>
+        <h3 class="product-title">${prod.name}</h3>
+        <div class="product-price">$${prod.price.toFixed(2)}</div>
+        <button class="btn-primary" onclick="addToCart('${prod.id}')" style="width:100%; margin-top:0.75rem;">
+          Add to Cart
+        </button>
       </div>
+    </article>
+  `).join('');
+}
+
+// 3. Cart Slide-out & State Handlers
+function addToCart(productId) {
+  const itemToAdd = productsList.find(p => p.id === productId);
+  if (!itemToAdd) return;
+
+  const existing = cart.find(item => item.id === productId);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ ...itemToAdd, qty: 1 });
+  }
+
+  saveAndRefreshCart();
+  openCartDrawer();
+}
+
+function saveAndRefreshCart() {
+  localStorage.setItem('afro_cart', JSON.stringify(cart));
+  renderCartItems();
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cartItemsContainer');
+  const totalEl = document.getElementById('cartDrawerTotal');
+
+  if (cart.length === 0) {
+    container.innerHTML = `<p style="text-align:center; padding:2rem; color:#666;">Your basket is empty.</p>`;
+    totalEl.innerText = '$0.00';
+    return;
+  }
+
+  let total = 0;
+  container.innerHTML = cart.map(item => {
+    const itemTotal = item.price * item.qty;
+    total += itemTotal;
+
+    return `
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid #eee;">
+        <img src="${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
+          <div style="font-size:0.8rem; color:#666;">Qty: ${item.qty} × $${item.price.toFixed(2)}</div>
+        </div>
+        <div style="font-weight:700;">$${itemTotal.toFixed(2)}</div>
+      </div>
+    `;
+  }).join('');
+
+  totalEl.innerText = `$${total.toFixed(2)}`;
+}
+
+function openCartDrawer() {
+  document.getElementById('cartDrawer').classList.add('active');
+  document.getElementById('cartOverlay').classList.add('active');
+}
+
+function closeCartDrawer() {
+  document.getElementById('cartDrawer').classList.remove('active');
+  document.getElementById('cartOverlay').classList.remove('active');
+}
+
+// Initialize on Load
+document.addEventListener('DOMContentLoaded', () => {
+  renderProducts();
+  saveAndRefreshCart();
+});
+</script>
+
     </section>
 
     <!-- PROMOTIONAL BANNERS -->

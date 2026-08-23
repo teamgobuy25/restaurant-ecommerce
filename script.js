@@ -148,7 +148,7 @@ function initFormHandlers() {
   const newsletter = document.getElementById('newsletterForm');
   newsletter.addEventListener('submit', (e) => {
     e.preventDefault();
-    alert('Welcome to the Afro Taste family! Your $15 discount coupon code is: AFROFEAST15');
+    alert('This feature is still to come soon!');
     newsletter.reset();
   });
 
