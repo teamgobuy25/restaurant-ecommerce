@@ -44,7 +44,8 @@
     <!-- SITE NAME / LOGO (Stays visible on mobile) -->
     <a href="index.html" class="brand-logo-placeholder">
       <div class="logo-box">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        <img src="logo.png" alt="Swiss Logo" style="width: 100%; height: auto;"  srcset="">
+        <!-- <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg> -->
       </div>
       <div class="logo-text-group">
         <span class="logo-name">AFRO TASTE</span>
@@ -985,20 +986,20 @@
 
 
     function openCartCheckoutModal() {
-    if (cart.length === 0) {
-      alert('Your cart is empty!');
-      return;
-    }
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
 
-    console.log( "CART", cart )
-    const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      console.log( "CART", cart )
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-    document.getElementById('cartModalItemCount').innerText = `${totalCount} item(s)`;
-    document.getElementById('cartModalTotalPrice').innerText = `CHF${grandTotal.toFixed(2)}`;
+      document.getElementById('cartModalItemCount').innerText = `${totalCount} item(s)`;
+      document.getElementById('cartModalTotalPrice').innerText = `CHF${grandTotal.toFixed(2)}`;
 
-    closeCartDrawer();
-    document.getElementById('cartPaypalModal').classList.add('active');
+      closeCartDrawer();
+      document.getElementById('cartPaypalModal').classList.add('active');
   }
 
   
