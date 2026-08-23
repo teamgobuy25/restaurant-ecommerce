@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AfroMarket Global | Authentic African Food, Groceries & Lifestyle</title>
+  <style>
+    /* ==========================================================================
+       1. AFRO-CENTRIC BRAND DESIGN TOKENS & SYSTEM VARIABLES
+       ========================================================================== */
+    :root {
+      --color-primary: #14532D;        /* Deep Forest Emerald */
+      --color-primary-hover: #064E3B;
+      --color-accent: #D97706;         /* Warm Gold / Terracotta Amber */
+      --color-accent-hover: #B45309;
+      --color-accent-light: #FEF3C7;
+      --color-sale: #DC2626;           /* Chili Red */
+      --color-bg-main: #FAFAF9;        /* Warm Neutral Stone */
+      --color-bg-card: #FFFFFF;
+      --color-text-main: #1C1917;
+      --color-text-muted: #78716C;
+      --color-border: #E7E5E4;
+      
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --fs-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
+      --fs-sm: clamp(0.875rem, 0.8rem + 0.375vw, 0.9375rem);
+      --fs-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+      --fs-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+      --fs-xl: clamp(1.35rem, 1.2rem + 0.75vw, 1.75rem);
+      --fs-2xl: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+      
+      --container-max: 1440px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* ==========================================================================
+       2. BASE RESET & ACCESSIBILITY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg-main);
+      color: var(--color-text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 70px;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* ==========================================================================
+       3. GLOBAL HEADER & UTILITIES
+       ========================================================================== */
+    .sticky-header-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--color-bg-card); box-shadow: var(--shadow-sm); }
+    
+    .promo-top-bar {
+      background: var(--color-primary);
+      color: #FFF;
+      font-size: var(--fs-xs);
+      padding: 0.5rem 0;
+      font-weight: 500;
+    }
+    .promo-top-bar .container { display: flex; justify-content: space-between; align-items: center; }
+    
+    .top-utility-links { display: flex; gap: 1.25rem; align-items: center; }
+    .top-utility-links select { background: transparent; border: none; color: #FFF; font-size: var(--fs-xs); cursor: pointer; }
+    .top-utility-links select option { color: var(--color-text-main); }
+    .support-phone { display: flex; align-items: center; gap: 0.25rem; color: #FFF; }
+
+    .site-header { padding: 1rem 0; border-bottom: 1px solid var(--color-border); }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .brand-logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.025em; color: var(--color-primary); display: flex; align-items: center; gap: 0.25rem; }
+    .brand-logo span { color: var(--color-accent); }
+
+    .search-container { flex: 1; max-width: 600px; position: relative; }
+    .search-input-wrapper { display: flex; border: 2px solid var(--color-primary); border-radius: var(--radius-full); overflow: hidden; background: #FFF; }
+    .search-input-wrapper input { flex: 1; border: none; padding: 0.625rem 1.25rem; font-size: var(--fs-sm); outline: none; }
+    .search-btn { background: var(--color-primary); color: white; padding: 0 1.25rem; display: flex; align-items: center; }
+
+    .header-actions { display: flex; align-items: center; gap: 1.25rem; }
+    .action-icon-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-full); }
+    .action-icon-btn:hover { background: var(--color-bg-main); }
+    .badge { position: absolute; top: 2px; right: 2px; background: var(--color-sale); color: white; font-size: 0.65rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    .nav-bar { border-bottom: 1px solid var(--color-border); background: #FFF; }
+    .nav-list { display: flex; list-style: none; gap: 2rem; overflow-x: auto; }
+    .nav-link { display: block; padding: 0.875rem 0; font-weight: 600; font-size: var(--fs-sm); color: var(--color-text-main); white-space: nowrap; }
+    .nav-link:hover { color: var(--color-accent); }
+
+    .breadcrumb-nav { padding: 0.75rem 0; background: var(--color-bg-main); font-size: var(--fs-xs); color: var(--color-text-muted); }
+    .breadcrumb-list { display: flex; list-style: none; gap: 0.5rem; align-items: center; }
+    .breadcrumb-item:not(:last-child)::after { content: "/"; margin-left: 0.5rem; }
+
+    /* ==========================================================================
+       4. HERO & HIGHLIGHTS
+       ========================================================================== */
+    .hero-section { position: relative; min-height: 460px; border-radius: var(--radius-lg); overflow: hidden; margin-top: 1rem; color: #FFF; display: flex; align-items: center; background: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20,83,45,0.92) 0%, rgba(20,83,45,0.4) 100%); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; max-width: 650px; padding: 3rem; }
+    .hero-tag { background: var(--color-accent); color: white; font-size: var(--fs-xs); font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); display: inline-block; margin-bottom: 1rem; text-transform: uppercase; }
+    .hero-title { font-size: var(--fs-2xl); font-weight: 800; margin-bottom: 1rem; line-height: 1.15; }
+    .hero-subtitle { font-size: var(--fs-lg); margin-bottom: 1.5rem; opacity: 0.95; }
+    
+    .btn-primary { display: inline-block; background: var(--color-accent); color: white; font-weight: 700; padding: 0.875rem 1.75rem; border-radius: var(--radius-full); transition: var(--transition-fast); }
+    .btn-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
+
+    .flash-sale-bar { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: var(--radius-md); padding: 1rem; margin: 1.5rem 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .countdown-timer { display: flex; gap: 0.5rem; align-items: center; }
+    .time-block { background: var(--color-sale); color: white; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: var(--fs-sm); }
+
+    .filter-pills-bar { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 2rem; scrollbar-width: none; }
+    .pill { background: #FFF; border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: var(--fs-xs); font-weight: 600; white-space: nowrap; cursor: pointer; }
+    .pill.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* ==========================================================================
+       5. PRODUCT MERCHANDISING GRIDS
+       ========================================================================== */
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; margin-top: 3rem; }
+    .section-title { font-size: var(--fs-xl); font-weight: 800; color: var(--color-primary); }
+
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; }
+    .category-card { background: #FFF; border-radius: var(--radius-md); padding: 1.5rem 1rem; text-align: center; border: 1px solid var(--color-border); transition: var(--transition-normal); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+    .category-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--color-accent); }
+    .category-icon { font-size: 2rem; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.5rem; }
+    .product-card { background: #FFF; border-radius: var(--radius-md); border: 1px solid var(--color-border); overflow: hidden; position: relative; display: flex; flex-direction: column; transition: var(--transition-normal); }
+    .product-card:hover { box-shadow: var(--shadow-md); }
+    .product-badge { position: absolute; top: 10px; left: 10px; background: var(--color-sale); color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); z-index: 2; }
+    .product-img { width: 100%; height: 200px; object-fit: cover; background: #F5F5F4; }
+    .product-details { padding: 1rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .product-origin { font-size: 0.75rem; color: var(--color-accent-hover); font-weight: 700; text-transform: uppercase; }
+    .product-title { font-size: var(--fs-base); font-weight: 700; margin: 0.25rem 0; color: var(--color-text-main); }
+    .product-price { font-weight: 800; font-size: var(--fs-lg); color: var(--color-primary); }
+
+    .promotional-split-banner { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 3rem 0; }
+    .promo-box { padding: 2.5rem; border-radius: var(--radius-lg); color: white; background: var(--color-primary); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+
+    .horizontal-scroll-rail { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
+    .rail-item { min-width: 140px; background: #FFF; border-radius: var(--radius-sm); border: 1px solid var(--color-border); padding: 0.5rem; text-align: center; }
+
+    /* ==========================================================================
+       6. TRUST, ENGAGEMENT & REVIEWS
+       ========================================================================== */
+    .value-prop-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; background: #FFF; padding: 2rem; border-radius: var(--radius-lg); margin: 3rem 0; border: 1px solid var(--color-border); }
+    .prop-item { display: flex; align-items: center; gap: 1rem; }
+
+    .reviews-grid, .ugc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem; }
+    .review-card { background: #FFF; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+
+    .store-locator-box { background: var(--color-accent-light); border-radius: var(--radius-lg); padding: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin: 3rem 0; }
+
+    .social-proof-toast { position: fixed; bottom: 20px; left: 20px; z-index: 900; background: #FFF; border-radius: var(--radius-md); padding: 0.875rem; box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem; max-width: 320px; }
+
+    /* ==========================================================================
+       7. FOOTER & UTILITIES
+       ========================================================================== */
+    .newsletter-section { background: var(--color-primary); color: white; padding: 3.5rem 0; text-align: center; margin-top: 4rem; }
+    .newsletter-form { display: flex; max-width: 500px; margin: 1.5rem auto 0; gap: 0.5rem; }
+    .newsletter-form input { flex: 1; padding: 0.875rem 1rem; border-radius: var(--radius-md); border: none; }
+
+    .site-footer { background: #0C2A18; color: #A7F3D0; padding-top: 4rem; padding-bottom: 2rem; font-size: var(--fs-sm); }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+    .footer-title { color: #FFF; font-weight: 700; margin-bottom: 1rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .footer-bottom { border-top: 1px solid #166534; padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+
+    .floating-actions { position: fixed; bottom: 80px; right: 20px; z-index: 950; display: flex; flex-direction: column; gap: 0.75rem; }
+    .float-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--color-accent); color: white; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); }
+
+    .mobile-sticky-dock { position: fixed; bottom: 0; left: 0; right: 0; background: #FFF; border-top: 1px solid var(--color-border); display: none; justify-content: space-around; padding: 0.5rem 0; z-index: 1000; }
+    .dock-item { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: var(--color-text-muted); }
+
+    .cookie-banner { position: fixed; bottom: 0; inset-x: 0; background: #1C1917; color: white; padding: 1rem; z-index: 1100; display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: var(--fs-xs); }
+
+    @media (max-width: 768px) {
+      .mobile-sticky-dock { display: flex; }
+      .site-header .search-container { display: none; }
+      .hero-content { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       ZONE 1: GLOBAL HEADER & NAVIGATION
+       ========================================================================== -->
+  <div class="sticky-header-wrapper">
+    <div class="promo-top-bar" role="region" aria-label="Announcement">
+      <div class="container">
+        <p>🌶️ Express Fresh Delivery: Get <strong>15% OFF</strong> Your First Grocery Box with code <strong>AFROFRESH</strong></p>
+        
+        <div class="top-utility-links">
+          <select aria-label="Select Country/Language">
+            <option value="en-us">🇺🇸 USA ($)</option>
+            <option value="en-gb">🇬🇧 UK (£)</option>
+            <option value="en-eu">🇪🇺 EU (€)</option>
+            <option value="en-ca">🇨🇦 CA ($)</option>
+          </select>
+
+          <a href="tel:+18005550199" class="support-phone" aria-label="Order Hotline">
+            📞 Order Hotline: +1 (800) 555-AFRO
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container">
+        <a href="/" class="brand-logo" aria-label="AfroMarket Global Homepage">
+          🌴 Afro<span>Market</span>
+        </a>
+
+        <div class="search-container">
+          <form role="search" action="/search" method="GET" class="search-input-wrapper">
+            <input type="search" name="q" placeholder="Search Fresh Yam, Egusi, Plantains, Suya Pepper, Fufu Flour..." aria-label="Search items" autocomplete="off">
+            <button type="submit" class="search-btn" aria-label="Execute Search">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </button>
+          </form>
+        </div>
+
+        <div class="header-actions">
+          <a href="/account" class="action-icon-btn" aria-label="Account Login">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </a>
+
+          <a href="/wishlist" class="action-icon-btn" aria-label="Saved Recipes & Favorites">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <span class="badge">2</span>
+          </a>
+
+          <a href="/cart" class="action-icon-btn" aria-label="Shopping Cart">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span class="badge">5</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <nav class="nav-bar" aria-label="Primary Navigation">
+      <div class="container">
+        <ul class="nav-list">
+          <li class="nav-item"><a href="/tubers" class="nav-link">🍠 Yams & Produce</a></li>
+          <li class="nav-item"><a href="/flours" class="nav-link">🌽 Grains, Fufu & Flours</a></li>
+          <li class="nav-item"><a href="/spices" class="nav-link">🌶️ Spices, Oils & Seasonings</a></li>
+          <li class="nav-item"><a href="/snacks" class="nav-link">🍪 Snacks & Drinks</a></li>
+          <li class="nav-item"><a href="/frozen" class="nav-link">🥩 Frozen Meat & Fish</a></li>
+          <li class="nav-item"><a href="/beauty" class="nav-link">✨ African Beauty & Fabrics</a></li>
+          <li class="nav-item"><a href="/deals" class="nav-link" style="color:var(--color-sale);">🔥 Weekly Fresh Deals</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+    <div class="container">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/groceries">African Groceries</a></li>
+        <li class="breadcrumb-item" aria-current="page">Fresh Imports</li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- ==========================================================================
+         ZONE 2: HERO & LIMITED-TIME OFFERS
+         ========================================================================== -->
+    <section class="hero-section" aria-label="Primary Promotion Banner">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Direct From Source</span>
+        <h1 class="hero-title">Taste of Home: Authentic African Groceries Delivered Fast</h1>
+        <p class="hero-subtitle">Fresh Ghanaian Yams, Golden Gari, Premium Egusi, Plantains, and authentic spices shipped direct to your kitchen.</p>
+        <a href="/groceries" class="btn-primary">Shop Fresh Groceries Now</a>
+      </div>
+    </section>
+
+    <section class="flash-sale-bar" aria-label="Flash Deals">
+      <div>
+        <strong>⚡ Weekend Meal Prep Sale:</strong> Premium Pounded Yam Flour & Palm Oil Bundles 20% Off!
+      </div>
+      <div class="countdown-timer">
+        <span>Offer ends in:</span>
+        <div class="time-block">05h</div>
+        <div class="time-block">22m</div>
+        <div class="time-block">40s</div>
+      </div>
+    </section>
+
+    <section aria-label="Quick category filters">
+      <div class="filter-pills-bar">
+        <span class="pill active">All Products</span>
+        <span class="pill">🔥 Popular: Ghanaian Yam</span>
+        <span class="pill">Yellow Gari</span>
+        <span class="pill">Ground Egusi</span>
+        <span class="pill">Malt Drinks</span>
+        <span class="pill">Authentic Palm Oil</span>
+        <span class="pill">Suya Pepper</span>
+        <span class="pill">Plantain Chips</span>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         ZONE 3: CATEGORIES & PRODUCT GRIDS
+         ========================================================================== -->
+    <section aria-labelledby="cat-heading">
+      <div class="section-header">
+        <h2 id="cat-heading" class="section-title">Shop By African Pantry Category</h2>
+      </div>
+      <div class="category-grid">
+        <article class="category-card"><div class="category-icon">🍠</div><h3>Fresh Tubers</h3></article>
+        <article class="category-card"><div class="category-icon">🌾</div><h3>Flours & Swallows</h3></article>
+        <article class="category-card"><div class="category-icon">🥘</div><h3>Soup Ingredients</h3></article>
+        <article class="category-card"><div class="category-icon">🍾</div><h3>Oils & Sauces</h3></article>
+        <article class="category-card"><div class="category-icon">🥤</div><h3>Beverages & Malt</h3></article>
+        <article class="category-card"><div class="category-icon">🪮</div><h3>Shea & Beauty</h3></article>
+      </div>
+    </section>
+
+    <!-- BEST SELLERS -->
+    <section aria-labelledby="bestseller-heading">
+      <div class="section-header">
+        <h2 id="bestseller-heading" class="section-title">Best Selling Essentials</h2>
+        <a href="/bestsellers" style="color:var(--color-accent); font-weight:700;">View All Items →</a>
+      </div>
+      <div class="product-grid">
+        <!-- SKU 1 -->
+        <article class="product-card">
+          <span class="product-badge">Top Seller</span>
+          <img class="product-img" src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=400&q=80" alt="Ghanaian Fresh Yam (Box)" loading="lazy">
+          <div class="product-details">
+            <span class="product-origin">Ghana Import</span>
+            <h3 class="product-title">Authentic Pona Yam (Box - approx. 10kg)</h3>
+            <div class="product-price">$42.99</div>
+            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- SKU 2 -->
+        <article class="product-card">
+          <img class="product-img" src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=400&q=80" alt="Iru & Egusi Seeds" loading="lazy">
+          <div class="product-details">
+            <span class="product-origin">Nigeria Import</span>
+            <h3 class="product-title">Hand-Pounded Egusi Seeds (500g)</h3>
+            <div class="product-price">$12.50</div>
+            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- SKU 3 -->
+        <article class="product-card">
+          <img class="product-img" src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=400&q=80" alt="Pure Red Palm Oil" loading="lazy">
+          <div class="product-details">
+            <span class="product-origin">Cameroon Import</span>
+            <h3 class="product-title">Unrefined Zomi Red Palm Oil (1L)</h3>
+            <div class="product-price">$14.99</div>
+            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- SKU 4 -->
+        <article class="product-card">
+          <img class="product-img" src="https://images.unsplash.com/photo-1528751014936-863e6e7a319c?auto=format&fit=crop&w=400&q=80" alt="Plantain Chips Box" loading="lazy">
+          <div class="product-details">
+            <span class="product-origin">Snack Box</span>
+            <h3 class="product-title">Sweet Crunchy Plantain Chips (Pack of 12)</h3>
+            <div class="product-price">$18.99</div>
+            <button class="btn-primary" style="width:100%; margin-top:0.75rem;">Add to Cart</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- PROMOTIONAL BANNERS -->
+    <section class="promotional-split-banner">
+      <div class="promo-box" style="background:linear-gradient(135deg, #14532D, #047857);">
+        <h3 style="font-size:1.5rem; margin-bottom:0.5rem;">🍲 Jollof Rice Perfect Kit</h3>
+        <p>Get authentic Basmati/Sella Rice, Tomato Paste, Thyme, & Spice Blend in one bundle.</p>
+        <a href="/kits" style="margin-top:1rem; color:#FEF3C7; font-weight:700;">Explore Meal Kits →</a>
+      </div>
+      <div class="promo-box" style="background:linear-gradient(135deg, #B45309, #D97706);">
+        <h3 style="font-size:1.5rem; margin-bottom:0.5rem;">👑 Raw Unrefined African Shea Butter</h3>
+        <p>Grade-A Yellow & White Shea Butter directly sourced from Northern Ghana women cooperatives.</p>
+        <a href="/beauty" style="margin-top:1rem; color:#FFF; font-weight:700;">Shop Beauty Care →</a>
+      </div>
+    </section>
+
+    <!-- RECENTLY VIEWED -->
+    <section style="margin-top: 3rem;">
+      <h3 style="font-size: var(--fs-base); margin-bottom: 1rem;">Recently Viewed Products</h3>
+      <div class="horizontal-scroll-rail">
+        <div class="rail-item">
+          <div style="font-size: 2rem;">🌾</div>
+          <p style="font-size:var(--fs-xs); margin-top:0.25rem;">Ijebu Gari 2kg</p>
+        </div>
+        <div class="rail-item">
+          <div style="font-size: 2rem;">🥤</div>
+          <p style="font-size:var(--fs-xs); margin-top:0.25rem;">Maltina Cans (6-pack)</p>
+        </div>
+        <div class="rail-item">
+          <div style="font-size: 2rem;">🌶️</div>
+          <p style="font-size:var(--fs-xs); margin-top:0.25rem;">Kankankan Suya Spice</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+       ZONE 4: TRUST, REVIEWS & LOCAL PICKUP
+       ========================================================================== -->
+    <section class="value-prop-bar" aria-label="Service Guarantees">
+      <div class="prop-item">
+        <svg width="32" height="32" fill="none" stroke="var(--color-primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <div>
+          <strong>Cold-Chain Express Shipping</strong>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted)">Temperature managed fresh deliver</p>
+        </div>
+      </div>
+      <div class="prop-item">
+        <svg width="32" height="32" fill="none" stroke="var(--color-primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <strong>100% Authentic Imports</strong>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted)">Directly from trusted West & East African farms</p>
+        </div>
+      </div>
+      <div class="prop-item">
+        <svg width="32" height="32" fill="none" stroke="var(--color-primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <div>
+          <strong>Secure Checkout</strong>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted)">Cards, PayPal & Apple Pay</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">What Our African Diaspora Community Says</h2>
+      </div>
+      <div class="reviews-grid">
+        <article class="review-card">
+          <p style="color:var(--color-accent);">★ ★ ★ ★ ★</p>
+          <p style="margin: 0.5rem 0;">"The Ghanaian Pona yams arrived fresh without a single sprout or bruise. Tastes just like home!"</p>
+          <small>— Grace A. (Verified Customer)</small>
+        </article>
+        <article class="review-card">
+          <p style="color:var(--color-accent);">★ ★ ★ ★ ★</p>
+          <p style="margin: 0.5rem 0;">"Finding good quality Suya pepper in Europe was so hard until I discovered AfroMarket. 10/10!"</p>
+          <small>— Kwame B. (Verified Customer)</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- STORE LOCATOR -->
+    <section class="store-locator-box">
+      <div>
+        <h3>Prefer Same-Day In-Store Pickup?</h3>
+        <p style="font-size:var(--fs-sm); color:var(--color-text-muted)">Check stock at our local AfroMarket physical retail hubs.</p>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <input type="text" placeholder="Enter Zip or Postal Code" style="padding:0.5rem 1rem; border:1px solid var(--color-border); border-radius:var(--radius-md);">
+        <button class="btn-primary">Find Store</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- SOCIAL PROOF TOAST -->
+  <div class="social-proof-toast" role="status" aria-live="polite">
+    <div style="font-size:1.5rem;">📦</div>
+    <div>
+      <p style="font-size:var(--fs-xs); font-weight:700;">Chidi from Houston</p>
+      <p style="font-size:var(--fs-xs); color:var(--color-text-muted);">Just ordered 5kg Pounded Yam Flour (3 mins ago)</p>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ZONE 5: RECIPES, NEWSLETTER & FOOTER
+       ========================================================================== -->
+  <section class="container" style="margin-top:4rem;">
+    <div class="section-header">
+      <h2 class="section-title">African Culinary Guides & Recipes</h2>
+    </div>
+    <div class="reviews-grid">
+      <article class="review-card">
+        <h4>How to Cook Authentic Nigerian Egusi Soup</h4>
+        <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:0.5rem;">Step-by-step guide on getting the perfect clumped egusi texture with bitter leaf.</p>
+      </article>
+      <article class="review-card">
+        <h4>The Secret to Perfect Party Jollof Rice</h4>
+        <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:0.5rem;">Mastering the smoky flavor profile using traditional cast iron pots and spices.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="newsletter-section">
+    <div class="container">
+      <h2>Join the AfroMarket Foodie Club</h2>
+      <p style="font-size:var(--fs-sm); opacity:0.9; margin-top:0.5rem;">Get weekly fresh stock alerts, secret traditional recipes, and $10 off your first order.</p>
+      <form class="newsletter-form" action="/subscribe" method="POST">
+        <input type="email" placeholder="Enter your email address" aria-label="Email Address" required>
+        <button type="submit" class="btn-primary" style="background:var(--color-accent);">Join Now</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-title">Grocery Categories</p>
+          <ul class="footer-links">
+            <li><a href="#">Fresh African Yams</a></li>
+            <li><a href="#">Fufu, Gari & Plantain Flour</a></li>
+            <li><a href="#">Egusi, Ogbono & Soup Seeds</a></li>
+            <li><a href="#">Palm Oil & Seasonings</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-title">Customer Care</p>
+          <ul class="footer-links">
+            <li><a href="#">Track Fresh Delivery</a></li>
+            <li><a href="#">Perishable Return Policy</a></li>
+            <li><a href="#">Wholesale & Bulk Orders</a></li>
+            <li><a href="#">Help & FAQs</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-title">AfroMarket Global</p>
+          <p>124 Culture Way, Suite 10</p>
+          <p>International Food District</p>
+          <p style="margin-top:0.5rem;">Email: support@afromarket.com</p>
+        </div>
+        <div>
+          <p class="footer-title">Follow Our Kitchen</p>
+          <div style="display:flex; gap:1rem;">
+            <a href="#">Instagram</a>
+            <a href="#">TikTok</a>
+            <a href="#">YouTube</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          <p>&copy; 2026 AfroMarket Global Inc. Preserving Culinary Heritage.</p>
+          <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:var(--fs-xs);">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Shipping Policy</a>
+          </div>
+        </div>
+        <div style="font-size:11px; opacity:0.8;">
+          💳 Visa, Mastercard, Amex, PayPal, Apple Pay Supported | 🔒 PCI-DSS Encrypted
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- UTILITIES -->
+  <div class="floating-actions">
+    <a href="#" class="float-btn" aria-label="Back to top">↑</a>
+    <button class="float-btn" aria-label="Chat support" style="background:var(--color-primary);">💬</button>
+  </div>
+
+  <nav class="mobile-sticky-dock" aria-label="Mobile Navigation">
+    <a href="/" class="dock-item">🏠 Home</a>
+    <a href="/search" class="dock-item">🔍 Search</a>
+    <a href="/cart" class="dock-item">🛒 Cart</a>
+    <a href="/account" class="dock-item">👤 Account</a>
+  </nav>
+
+  <div class="cookie-banner">
+    <div>We use cookies to personalize your shopping experience and deliver fresh offers. <a href="#" style="text-decoration:underline;">Learn More</a></div>
+    <button onclick="this.parentElement.style.display='none'" class="pill" style="color:black;">Accept</button>
+  </div>
+
+</body>
+</html>

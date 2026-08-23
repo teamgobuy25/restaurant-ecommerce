@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFRO TASTE | Order Confirmation</title>
+  <style>
+    :root {
+      --bg-color: #faf6f0;
+      --card-bg: #ffffff;
+      --primary-color: #1a0f0d;
+      --accent-color: #c85a32;
+      --border-color: #e8ddcf;
+      --text-muted: #666666;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--primary-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--primary-color);
+      color: #ffffff;
+      padding: 1.25rem;
+      text-align: center;
+      border-bottom: 3px solid var(--accent-color);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .confirmation-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 550px;
+      width: 100%;
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+    }
+
+    .status-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .status-icon.success {
+      background: #e6f4ea;
+      color: #137333;
+    }
+
+    .status-icon.processing {
+      background: #fef7e0;
+      color: #b06000;
+    }
+
+    .status-icon.error {
+      background: #fce8e6;
+      color: #c5221f;
+    }
+
+    h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.35rem;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .details-box {
+      background: var(--bg-color);
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    .details-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .details-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* HORIZONTAL PRODUCT CARDS SECTION */
+    .purchased-items-section {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .purchased-items-section h3 {
+      font-size: 1rem;
+      margin: 0 0 0.75rem 0;
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.3rem;
+    }
+
+    .purchased-products-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .product-horizontal-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .product-horizontal-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .product-horizontal-info {
+      flex: 1;
+    }
+
+    .product-horizontal-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 0 0 0.2rem 0;
+      color: var(--primary-color);
+    }
+
+    .product-horizontal-price {
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    .btn-home {
+      display: inline-block;
+      background: var(--accent-color);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 6px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .btn-home:hover {
+      background: #b04b27;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AFRO TASTE MARKET</h1>
+  </header>
+
+  <main>
+    <div class="confirmation-card">
+      <div id="statusIcon" class="status-icon processing">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+
+      <h2 id="statusTitle">Verifying Payment...</h2>
+      <p id="statusMessage">Please wait while we log your payment and finalize your order.</p>
+
+      <div class="details-box" id="orderDetails" style="display: none;">
+        <div class="details-row">
+          <span>Order Reference:</span>
+          <strong id="displayOrderId">-</strong>
+        </div>
+        <div class="details-row">
+          <span>Payer ID:</span>
+          <strong id="displayPayerId">-</strong>
+        </div>
+        <div class="details-row">
+          <span>Payment Status:</span>
+          <strong id="displayStatus" style="color: #137333;">PAID</strong>
+        </div>
+      </div>
+
+      <!-- PURCHASED PRODUCTS HORIZONTAL LIST -->
+      <div class="purchased-items-section" id="purchasedSection" style="display: none;">
+        <h3>Items Purchased</h3>
+        <div class="purchased-products-list" id="purchasedProductsContainer">
+          <!-- Dynamic Horizontal Cards Inserted Here -->
+        </div>
+      </div>
+
+      <a href="store.html" class="btn-home">Return to Store</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://tvpfajlxeyrsyiyzouun.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_9iv0K3P_84l2kt9DKpwyOg_unDJ4cSc';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function processOrderConfirmation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      const orderId = urlParams.get('custom') || urlParams.get('id');
+      const payerId = urlParams.get('PayerID') || urlParams.get('payer_id') || 'N/A';
+
+      const iconEl = document.getElementById('statusIcon');
+      const titleEl = document.getElementById('statusTitle');
+      const msgEl = document.getElementById('statusMessage');
+      const detailsEl = document.getElementById('orderDetails');
+      const purchasedSection = document.getElementById('purchasedSection');
+      const productsContainer = document.getElementById('purchasedProductsContainer');
+
+      if (!orderId) {
+        iconEl.className = 'status-icon error';
+        iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+        titleEl.innerText = 'Order ID Missing';
+        msgEl.innerText = 'We could not locate an order ID in your payment parameters. If your account was charged, please contact customer support.';
+        return;
+      }
+
+      try {
+        // 1. Update order status in the 'order' table
+        const { data: updatedOrder, error: updateError } = await supabaseClient
+          .from('order')
+          .update({
+            status: 'paid',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId)
+          .select('*')
+          .single();
+
+        if (updateError) throw updateError;
+
+        // 2. Extract product_id string, split into array, and fetch product details
+        if (updatedOrder && updatedOrder.product_id) {
+          const rawIds = updatedOrder.product_id.split(',').map(id => id.trim()).filter(Boolean);
+
+          if (rawIds.length > 0) {
+            const { data: products, error: productError } = await supabaseClient
+              .from('product')
+              .select('*')
+              .in('id', rawIds);
+
+            if (!productError && products && products.length > 0) {
+              const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
+              
+              productsContainer.innerHTML = products.map(prod => `
+                <div class="product-horizontal-card">
+                  <img src="${prod.image || fallbackImg}" alt="${prod.name}">
+                  <div class="product-horizontal-info">
+                    <div class="product-horizontal-title">${prod.name}</div>
+                    <div class="product-horizontal-price">CHF ${parseFloat(prod.price).toFixed(2)}</div>
+                  </div>
+                </div>
+              `).join('');
+
+              purchasedSection.style.display = 'block';
+            }
+          }
+        }
+
+        // 3. Render success state
+        iconEl.className = 'status-icon success';
+        iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        titleEl.innerText = 'Payment Successful!';
+        msgEl.innerText = 'Thank you for your purchase. Your payment has been received and your order is being processed.';
+
+        document.getElementById('displayOrderId').innerText = `#${orderId}`;
+        document.getElementById('displayPayerId').innerText = payerId;
+        detailsEl.style.display = 'block';
+
+      } catch (err) {
+        console.error('Confirmation error:', err);
+        iconEl.className = 'status-icon error';
+        iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+        titleEl.innerText = 'Confirmation Error';
+        msgEl.innerText = 'Your payment was completed, but we encountered an issue processing your order update. Reference ID: ' + orderId;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', processOrderConfirmation);
+  </script>
+</body>
+</html>

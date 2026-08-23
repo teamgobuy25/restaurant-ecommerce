@@ -1157,3 +1157,302 @@ h1, h2, h3, h4, p, span, a {
   max-width: 200px; /* Reduced from default width to give nav items more space */
   flex: 1;
 }
+
+
+
+
+    /* ==========================================
+   1. MODAL OVERLAY & CONTAINER
+   ========================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.paypal-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e8ddcf;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   2. HEADER & BRANDING
+   ========================================== */
+.paypal-header {
+  background: #003087;
+  color: #ffffff;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paypal-logo {
+  font-weight: 900;
+  font-size: 1.3rem;
+  font-style: italic;
+  letter-spacing: -0.5px;
+  color: #0079c1;
+  background: #ffffff;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+}
+
+.paypal-body {
+  padding: 1.5rem;
+}
+
+/* ==========================================
+   3. RETURN NOTICE BOX
+   ========================================== */
+.return-notice {
+  background: #eaf4fe;
+  border: 1px solid #bee0ff;
+  color: #003087;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.825rem;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+
+.return-notice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ==========================================
+   4. FORM INPUTS & LAYOUT
+   ========================================== */
+.form-group {
+  margin-bottom: 0.85rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.825rem;
+  margin-bottom: 0.3rem;
+  color: #1a0f0d;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #e8ddcf;
+  border-radius: 6px;
+  background: #faf6f0;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #0079c1;
+  background: #ffffff;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* ==========================================
+   5. ORDER SUMMARY SECTION
+   ========================================== */
+.order-summary {
+  background: #faf6f0;
+  border: 1px dashed #e8ddcf;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #555555;
+  margin-bottom: 0.3rem;
+}
+
+.summary-row.total {
+  border-top: 1px solid #e8ddcf;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 800;
+  color: #1a0f0d;
+  font-size: 1rem;
+}
+
+/* ==========================================
+   6. PAYPAL BUTTON STYLES
+   ========================================== */
+.btn-complete-pay,
+.btn-paypal-theme {
+  width: 100%;
+  background: #ffc439;
+  color: #003087;
+  border: 1px solid #e5b229;
+  padding: 0.85rem;
+  border-radius: 25px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 4px 10px rgba(255, 196, 57, 0.3);
+}
+
+.btn-complete-pay:hover,
+.btn-paypal-theme:hover {
+  background: #f2b72b;
+}
+
+.btn-complete-pay:active,
+.btn-paypal-theme:active {
+  transform: scale(0.99);
+}
+
+.btn-complete-pay:disabled,
+.btn-paypal-theme:disabled {
+  background: #e5e5e5;
+  color: #999999;
+  border-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ==========================================
+   7. CART SLIDE-OUT PANEL
+   ========================================== */
+.cart-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+}
+
+.cart-drawer-overlay.active {
+  display: block;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 100%;
+  max-width: 380px;
+  height: 100%;
+  background: #ffffff;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.cart-drawer.active {
+  right: 0;
+}
+
+.cart-drawer-header {
+  padding: 1.25rem;
+  background: #1a0f0d;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-drawer-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.close-drawer-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.cart-drawer-body {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.cart-drawer-footer {
+  padding: 1.25rem;
+  border-top: 1px solid #e8ddcf;
+  background: #faf6f0;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #1a0f0d;
+}
+
+.btn-cart-checkout {
+  width: 100%;
+  background: #c85a32;
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cart-checkout:hover {
+  background: #b04b27;
+}

@@ -111,7 +111,7 @@ function openQuickViewModal(productId) {
         <h2 style="font-family:'Syne'; margin:8px 0; font-size:1.5rem;">${product.name}</h2>
         <p style="font-size:1.25rem; font-weight:800; margin-bottom:16px;">$${product.price.toFixed(2)}</p>
         <p style="color:#6B5E54; font-size:0.9rem; margin-bottom:24px;">${product.description}</p>
-        <button class="btn btn-primary full-width" onclick="addToCart('${product.id}'); document.getElementById('quickViewOverlay').classList.remove('active');">Add to Taste Basket</button>
+        <button class="btn btn-primary full-width" onclick="addToCart('${product.id}', '${escapeHTML(product.name)}', ${product.price}, '${product.image || ''}'); document.getElementById('quickViewOverlay').classList.remove('active');">Add to Taste Basket</button>
       </div>
     </div>
   `;
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('productsGrid');
       container.innerHTML = state.products.map(product => `
         <div class="product-card">
-          <div class="product-thumb">
+          <div class="product-thumb" onclick="window.location.href='product.html?id=${product.id}'" style="cursor:pointer;">
             ${product.oldPrice ? `<span class="badge-discount">SAVE ${(100 - (product.price/product.oldPrice * 100)).toFixed(0)}%</span>` : ''}
             <img src="${product.image}" alt="${product.name}" loading="lazy">
           </div>
@@ -238,31 +238,54 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="product-brand">${product.brand}</span>
             <h3 class="product-title">${product.name}</h3>
             <div class="product-price">
-              <span>$${product.price.toFixed(2)}</span>
-              ${product.oldPrice ? `<span class="old">$${product.oldPrice.toFixed(2)}</span>` : ''}
+              <span>CHF${product.price.toFixed(2)}</span>
+              ${product.oldPrice ? `<span class="old">CHF${product.oldPrice.toFixed(2)}</span>` : ''}
             </div>
-            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">Add to Basket</button>
+            <button class="add-to-cart-btn" onclick="addToCart('${product.id}', '${escapeHTML(product.name)}', ${product.price}, '${product.image || ''}'); document.getElementById('quickViewOverlay').classList.remove('active');">Add to Basket</button>
           </div>
         </div>
       `).join('');
     }
 
-    function addToCart(productId) {
-      const product = window.products.find(p => { 
-        // console.log( "IDs", parseInt(p.id), parseInt(productId) )
-            return parseInt(p.id) === parseInt(productId) 
-      });
-      // console.log( "Hello!!! 111", product )
-      if(product) {
-        state.cart.push(product);
+      function escapeHTML(str) {
+        return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+      }
+
+
+    // function addToCart(productId) {
+    //   const product = window.products.find(p => { 
+    //     // console.log( "IDs", parseInt(p.id), parseInt(productId) )
+    //         return parseInt(p.id) === parseInt(productId) 
+    //   });
+    //   console.log( "Hello!!! 111", product )
+    //   if(product) { 
+    //     product.qty += 1;
+    //     updateCartUI();
+    //     console.log( "Hello!!!" )
+    //     document.getElementById('cartDrawer').classList.add('active');
+    //   } else {
+    //     product.qty = 1
+    //     cart.push(product);
+    //   }
+    // }
+
+      function addToCart(id, name, price, image) {
+        const existing = cart.find(item => item.id === id);
+
+        console.log( "DETAILS: ", id, name, price, image )
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({ id, name, price: parseFloat(price), image, qty: 1 });
+        }
+        // saveAndRefreshCart();
+        // openCartDrawer();
         updateCartUI();
-        console.log( "Hello!!!" )
         document.getElementById('cartDrawer').classList.add('active');
       }
-    }
 
     function removeFromCart(index) {
-      state.cart.splice(index, 1);
+      cart.splice(index, 1);
       updateCartUI();
     }
 
@@ -271,27 +294,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('cartItemsContainer');
       const subtotalEl = document.getElementById('cartSubtotal');
 
-      drawerCount.textContent = state.cart.length;
+      drawerCount.textContent = cart.length;
 
-      if (state.cart.length === 0) {
+      if (cart.length === 0) {
         container.innerHTML = `<div class="empty-cart-msg">Your Taste Basket is currently empty.</div>`;
-        subtotalEl.textContent = '$0.00';
+        subtotalEl.textContent = 'CHF0.00';
         return;
       }
 
-      container.innerHTML = state.cart.map((item, index) => `
+      container.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
           <img src="${item.image}" alt="${item.name}">
           <div class="cart-item-info">
             <div class="cart-item-title">${item.name}</div>
-            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+            <div class="cart-item-price">CHF${item.price.toFixed(2)}</div>
           </div>
           <button onclick="removeFromCart(${index})" style="color:#C83214; font-size:0.8rem; font-weight:700; border:none; background:none; cursor:pointer;">Remove</button>
         </div>
       `).join('');
 
-      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
-      subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+      const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+      subtotalEl.textContent = `CHF${subtotal.toFixed(2)}`;
     }
 
     function closeCartDrawer() {
@@ -300,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Checkout Modal Handlers
     function openCheckoutModal() {
-      const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+      const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
       if (subtotal === 0) return alert('Your cart is empty!');
 
       document.getElementById('checkoutTotal').textContent = `$${subtotal.toFixed(2)}`;

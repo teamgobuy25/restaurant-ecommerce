@@ -198,6 +198,11 @@
       </div>
     </section>
 
+      <div class="container" style="margin-top: 4em;">
+        <!-- <h2>AFRO-EATS Dynamic Storefront</h2> -->
+        <div class="products-grid" id="productsGrid"></div>
+      </div>
+
     <!-- 5. FEATURED CATEGORIES (Bento Grid) -->
     <section class="categories-section" id="categories">
       <div class="section-container">
@@ -257,66 +262,50 @@
 
 
 
-        
-  <div class="container">
-    <!-- <h2>AFRO-EATS Dynamic Storefront</h2> -->
-    <div class="products-grid" id="productsGrid"></div>
-  </div>
+            <!-- 9. INSTAGRAM / SOCIAL COMMERCE MOSAIC GRID -->
+    <section class="instagram-section">
+      <div class="section-container">
+        <div class="section-header center">
+          <h2>#Favourites</h2>
+          <p>Tag <strong>#AfroTasteTable</strong> on Instagram to share your African feast creations.</p>
+        </div>
 
-  <!-- Cart Drawer -->
-  <!-- <aside class="cart-drawer" id="cartDrawer">
-    <div class="cart-header">
-      <h3>Your Taste Basket (<span id="cartDrawerCount">0</span>)</h3>
-      <button class="close-drawer" id="closeCart" onclick="closeCartDrawer()">✕</button>
-    </div>
-    <div class="cart-body" id="cartItemsContainer">
-      <div class="empty-cart-msg">Your Taste Basket is currently empty.</div>
-    </div>
-    <div class="cart-footer">
-      <div class="subtotal-row" style="display:flex; justify-content:space-between; font-weight:bold;">
-        <span>Subtotal</span>
-        <span id="cartSubtotal">$0.00</span>
-      </div>
-      <p class="shipping-note" style="font-size:0.8rem; color:#666;">Temperature-controlled packaging calculated at checkout.</p>
-      <button class="btn btn-primary full-width" onclick="openCheckoutModal()">Proceed to Secure Checkout</button>
-    </div>
-  </aside> -->
-
-  <!-- Checkout PayPal Modal -->
-  <div class="modal-overlay" id="checkoutModal">
-    <div class="checkout-card">
-      <h3>Complete Your Checkout</h3>
-      <p>Order Total: <strong id="checkoutTotal">$0.00</strong></p>
-
-      <!-- PayPal Panel Form -->
-      <div class="paypal-box">
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="paypalForm">
-          <!-- PayPal Configuration Variables -->
-          <input type="hidden" name="cmd" value="_xclick">
-          <!-- ADMIN PAYPAL EMAIL PLACEHOLDER -->
-          <input type="hidden" name="business" value="admin-merchant@afroeats.com">
-          <input type="hidden" name="item_name" value="AFRO-EATS Order">
-          <input type="hidden" name="amount" id="paypalAmount" value="0.00">
-          <input type="hidden" name="currency_code" value="USD">
-          <input type="hidden" name="rm" value="1">
-          <input type="hidden" name="return" value="https://yourdomain.com/order-success.php">
-          <input type="hidden" name="cancel_return" value="https://yourdomain.com/index.html">
-
-          <div class="notice-checkbox">
-            <label>
-              <input type="checkbox" id="acceptReturnNotice" required>
-              I understand that I must click <strong>"Return to Merchant"</strong> on the PayPal website after payment to finalize and log my order.
-            </label>
+        <div class="mosaic-grid">
+          <div class="mosaic-item">
+            <img src="bitter leaf 2.jpeg" alt="Social Dish">
+            <div class="mosaic-overlay">
+              <span>View Recipe →</span>
+            </div>
           </div>
-
-          <button type="submit" id="paypalSubmitBtn" class="btn btn-primary full-width" disabled>
-            Transfer to PayPal to Complete Payment
-          </button>
-        </form>
+          <div class="mosaic-item">
+            <img src="yam.jpeg" alt="Social Dish">
+            <div class="mosaic-overlay">
+              <span>View Recipe →</span>
+            </div>
+          </div>
+          <div class="mosaic-item">
+            <img src="bole.jpg" alt="Social Dish">
+            <div class="mosaic-overlay">
+              <span>View Recipe →</span>
+            </div>
+          </div>
+          <div class="mosaic-item">
+            <img src="jallof3.jpeg" alt="Social Dish">
+            <div class="mosaic-overlay">
+              <span>View Recipe →</span>
+            </div>
+          </div>
+          <div class="mosaic-item">
+            <img src="jallof4.jpeg" alt="Social Dish">
+            <div class="mosaic-overlay">
+              <span>View Recipe →</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <button onclick="closeCheckoutModal()" style="margin-top: 1rem; background:none; border:none; cursor:pointer; text-decoration:underline;">Cancel</button>
-    </div>
-  </div>
+    </section>
+        
+
 
 
 
@@ -702,7 +691,7 @@
   <aside class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
       <h3>Your Taste Basket (<span id="cartDrawerCount">0</span>)</h3>
-      <button class="close-drawer" id="closeCart">✕</button>
+      <button class="close-drawer" id="closeCart" onclick="closeCartDrawer()">✕</button>
     </div>
     <div class="cart-body" id="cartItemsContainer">
       <div class="empty-cart-msg">Your Taste Basket is currently empty.</div>
@@ -710,10 +699,10 @@
     <div class="cart-footer">
       <div class="subtotal-row">
         <span>Subtotal</span>
-        <span id="cartSubtotal">$0.00</span>
+        <span id="cartSubtotal">CHF0.00</span>
       </div>
       <p class="shipping-note">Temperature-controlled packaging calculated at checkout.</p>
-      <button class="btn btn-primary full-width">Proceed to Secure Checkout</button>
+      <button class="btn btn-primary full-width" onclick="openCartCheckoutModal()" >Proceed to Secure Checkout</button>
     </div>
   </aside>
 
@@ -726,6 +715,410 @@
       </div>
     </div>
   </div>
+
+
+    </div>
+  </div>
+
+  <!-- Checkout PayPal Modal -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="checkout-card">
+      <h3>Complete Your Checkout</h3>
+      <p>Order Total: <strong id="checkoutTotal">CHF0.00</strong></p>
+        <div class="paypal-box">
+
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="paypalForm" onsubmit="handlePaypalSubmit(event)">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="...@gmail.com">
+            <input type="hidden" name="item_name" value="AFRO-EATS Order">
+            <input type="hidden" name="amount" id="paypalAmount" value="0.00">
+            <input type="hidden" name="currency_code" value="CHF">
+            <input type="hidden" name="rm" value="1">
+            <input type="hidden" name="return" value="/return.html">
+            <input type="hidden" name="cancel_return" value="https://yourdomain.com/index.html">
+
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="custom_full_name" required placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+              <label for="residenceAddress">Residence Address</label>
+              <input type="text" id="residenceAddress" name="custom_address" required placeholder="123 Main St, Apt 4B">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="postCode">Post Code</label>
+                <input type="text" id="postCode" name="custom_postcode" required placeholder="10001">
+              </div>
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" id="phoneNumber" name="custom_phone" required placeholder="+1 555-0199">
+              </div>
+            </div>
+
+            <div class="notice-checkbox">
+              <label>
+                I understand that I must click "Return to Merchant" on the PayPal website after payment to finalize and log my order.
+              </label>
+              <input type="checkbox" id="acceptReturnNotice" required>
+            </div>
+
+            <button type="submit" id="paypalSubmitBtn" class="btn btn-paypal-theme full-width" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right:8px; vertical-align:middle;">
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.761.761 0 0 1 .752-.644h6.812c3.21 0 5.485.836 6.136 2.528.324.84.28 1.912-.132 3.193-.58 1.802-1.848 3.093-3.772 3.839 2.052.41 3.23 1.583 3.064 3.511-.237 2.766-2.58 4.39-6.31 4.39H8.437a.761.761 0 0 1-.752-.644l-.609-3.566z"/>
+              </svg>
+              Transfer to PayPal to Complete Payment
+            </button>
+          </form>
+        </div>
+        <button onclick="closeCheckoutModal()" style="margin-top: 1rem; background:none; border:none; cursor:pointer; text-decoration:underline;">Cancel</button>
+    </div>
+  </div>
+
+
+<style>
+  .paypal-box {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #E8DDCF;
+    max-width: 450px;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+    color: #1A0F0D;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid #E8DDCF;
+    border-radius: 6px;
+    background: #FAF6F0;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+  .form-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .form-row .form-group {
+    flex: 1;
+  }
+  .notice-checkbox {
+    margin: 1.25rem 0;
+    font-size: 0.85rem;
+    color: #444;
+    text-align: left;
+  }
+  .notice-checkbox label {
+    cursor: pointer;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .full-width {
+    width: 100%;
+  }
+
+  /* PayPal Redesigned Theme Button */
+  .btn-paypal-theme {
+    background: #FFC439;
+    color: #003087;
+    border: 1px solid #E5B229;
+    padding: 0.85rem;
+    border-radius: 25px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 196, 57, 0.3);
+  }
+  .btn-paypal-theme:hover:not(:disabled) {
+    background: #F2B72B;
+  }
+  .btn-paypal-theme:disabled {
+    background: #E5E5E5;
+    color: #999999;
+    border-color: #CCCCCC;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+</style>
+
+
+
+<!-- CART CHECKOUT PAYPAL MODAL -->
+<div class="modal-overlay" id="cartPaypalModal">
+  <div class="paypal-modal">
+    <div class="paypal-header">
+      <span class="paypal-logo">PayPal</span>
+      <button onclick="closeCartCheckoutModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+    </div>
+
+    <div class="paypal-body">
+      <div class="return-notice">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div class="return-notice-text">
+          <strong>Automatic Redirection Notice</strong>
+          Once your payment completes, please click <strong>"Return to Merchant"</strong> to log your order.
+        </div>
+      </div>
+
+      <form id="cartPaypalForm" onsubmit="handleCartPaypalSubmit(event)">
+        <div class="form-group">
+          <label for="cartFullName">Full Name</label>
+          <input type="text" id="cartFullName" required placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+          <label for="cartResidenceAddress">Residence Address</label>
+          <input type="text" id="cartResidenceAddress" required placeholder="123 Main St, Apt 4B">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cartPostCode">Post Code</label>
+            <input type="text" id="cartPostCode" required placeholder="10001">
+          </div>
+          <div class="form-group">
+            <label for="cartPhoneNumber">Phone Number</label>
+            <input type="tel" id="cartPhoneNumber" required placeholder="+1 555-0199">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cartPayerId">E-mail</label>
+          <input type="text" id="customer-email" placeholder="example@gmail.com" required>
+        </div>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Items:</span>
+            <span id="cartModalItemCount">0 items</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span id="cartModalTotalPrice">CHF0.00</span>
+          </div>
+        </div>
+
+        <button type="submit" id="cartPaySubmitBtn" class="btn-complete-pay">Complete Purchase</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  let cart = JSON.parse(localStorage.getItem('afro_cart')) || [];
+
+  // Script to handle enabling/disabling the button based on original checkbox state
+  document.getElementById('acceptReturnNotice').addEventListener('change', function() {
+    document.getElementById('paypalSubmitBtn').disabled = !this.checked;
+  });
+
+  // Supabase Database Insertion prior to PayPal redirection
+  // async function handlePaypalSubmit(event) {
+  //   event.preventDefault();
+  //   const btn = document.getElementById('paypalSubmitBtn');
+  //   btn.disabled = true;
+  //   btn.innerText = 'Initializing Payment...';
+
+  //   const fullName = document.getElementById('fullName').value.trim();
+  //   const residenceAddress = document.getElementById('residenceAddress').value.trim();
+  //   const postCode = document.getElementById('postCode').value.trim();
+  //   const phoneNumber = document.getElementById('phoneNumber').value.trim();
+  //   const amount = parseFloat(document.getElementById('paypalAmount').value) || 0.00;
+  //   const transactionId = 'TXN-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+  //   // 1. Insert entry into Supabase with 'pending' status and empty payer_id
+  //   const { data, error } = await supabaseClient
+  //     .from('payment')
+  //     .insert([
+  //       {
+  //         transaction_id: transactionId,
+  //         payment_gateway: 'paypal',
+  //         amount: amount,
+  //         currency: 'USD',
+  //         payment_status: 'pending',
+  //         full_name: fullName,
+  //         residence_address: residenceAddress,
+  //         post_code: postCode,
+  //         phone_number: phoneNumber,
+  //         payer_id: ''
+  //       }
+  //     ])
+  //     .select('id')
+  //     .single();
+
+  //   if (error) {
+  //     alert('Error initiating checkout: ' + error.message);
+  //     btn.disabled = false;
+  //     btn.innerText = 'Transfer to PayPal to Complete Payment';
+  //     return;
+  //   }
+
+  //   // 2. Set return URL with inserted record ID
+  //   const returnUrl = `/return.html?id=${data.id}`;
+  //   document.querySelector('input[name="return"]').value = returnUrl;
+
+  //   // 3. Submit form to PayPal Standard Endpoint
+  //   event.target.submit();
+  // }
+
+    function closeCartCheckoutModal() {
+      document.getElementById('cartPaypalModal').classList.remove('active');
+    }
+
+
+
+    function openCartCheckoutModal() {
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    console.log( "CART", cart )
+    const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+    document.getElementById('cartModalItemCount').innerText = `${totalCount} item(s)`;
+    document.getElementById('cartModalTotalPrice').innerText = `CHF${grandTotal.toFixed(2)}`;
+
+    closeCartDrawer();
+    document.getElementById('cartPaypalModal').classList.add('active');
+  }
+
+  
+  async function handleCartPaypalSubmit(event) {
+  event.preventDefault();
+  const btn = document.getElementById('cartPaySubmitBtn');
+  btn.disabled = true;
+  btn.innerText = 'Processing Payment...';
+
+  const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const orderNumber = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+  const fullName = document.getElementById('cartFullName').value.trim();
+  const residenceAddress = document.getElementById('cartResidenceAddress').value.trim();
+  const postCode = document.getElementById('cartPostCode').value.trim();
+  const phoneNumber = document.getElementById('cartPhoneNumber').value.trim();
+  const customerEmail= document.getElementById('customer-email').value.trim();
+
+  // Extract and comma-separate all unique product IDs from the cart
+  const productIds = cart.map(item => item.id).join(',');
+
+  // Map directly to your 'ooder' schema
+  const payload = {
+    order_number: orderNumber,
+    customer_name: fullName,
+    customer_phone: phoneNumber,
+    customer_email: customerEmail,
+    shipping_address: `${residenceAddress}, ${postCode}`,
+    product_id: productIds,
+    subtotal: grandTotal,
+    tax: 0.00,
+    shipping_fee: 0.00,
+    total_amount: grandTotal,
+    status: 'pending'
+  };
+
+  // console.log( "STORE", payload )
+  try {
+    // 1. Insert order into Supabase
+    const { data, error } = await supabaseClient
+      .from('order')
+      .insert([payload])
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    // 2. Clear local cart
+    cart = [];
+    if (typeof saveAndRefreshCart === 'function') {
+      saveAndRefreshCart();
+    }
+
+    // 3. Construct dynamic PayPal form and auto-submit
+    const paypalForm = document.createElement('form');
+    paypalForm.method = 'POST';
+    paypalForm.action = 'https://www.paypal.com/cgi-bin/webscr';
+
+    const fields = {
+      cmd: '_xclick',
+      business: 'uvictory35@gmail.com', // Replace with your merchant email
+      item_name: `AFRO TASTE Market Order #${data.id}`,
+      amount: grandTotal.toFixed(2),
+      currency_code: 'CHF',
+      return: '/return.html',
+      cancel_return: window.location.href,
+      custom: data.id, // Holds the database order ID
+      rm: '1'          // Returns HTTP POST/GET parameters to return URL
+    };
+
+    for (const [key, value] of Object.entries(fields)) {
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = key;
+      hiddenInput.value = value;
+      paypalForm.appendChild(hiddenInput);
+    }
+
+    document.body.appendChild(paypalForm);
+    paypalForm.submit();
+
+    // console.log( "STORE 2", payload )
+
+  } catch (err) {
+    alert('Checkout error: ' + err.message);
+    btn.disabled = false;
+    btn.innerText = 'Complete Purchase';
+  }
+}
+
+
+
+
+</script>
+
+
+  <script>
+
+    // Checkout Modal Handlers
+    // function openCheckoutModal() {
+    //   const subtotal = state.cart.reduce((sum, item) => sum + item.price, 0);
+    //   if (subtotal === 0) return alert('Your cart is empty!');
+
+    //   document.getElementById('checkoutTotal').textContent = `CHF${subtotal.toFixed(2)}`;
+    //   document.getElementById('paypalAmount').value = subtotal.toFixed(2);
+    //   document.getElementById('checkoutModal').classList.add('active');
+    // }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    // Notice confirmation checkbox listener
+    document.getElementById('acceptReturnNotice').addEventListener('change', function(e) {
+      document.getElementById('paypalSubmitBtn').disabled = !e.target.checked;
+    });
+
+    // Initialize application
+    // loadProducts();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>

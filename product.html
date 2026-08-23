@@ -91,6 +91,105 @@
       .desktop-only { display: none !important; }
       .mobile-nav-toggle { display: block; }
     }
+
+    /* Product Page Modal Form Input Styles */
+#paypalModal .form-group {
+  margin-bottom: 0.85rem;
+  text-align: left;
+}
+
+#paypalModal .form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.825rem;
+  margin-bottom: 0.3rem;
+  color: #1a0f0d;
+}
+
+#paypalModal .form-group input {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #e8ddcf;
+  border-radius: 6px;
+  background: #faf6f0;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+#paypalModal .form-group input:focus {
+  outline: none;
+  border-color: #0079c1;
+  background: #ffffff;
+}
+
+#paypalModal .form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+#paypalModal .form-row .form-group {
+  flex: 1;
+}
+
+/* Restrict modal height and center on screen */
+.paypal-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  max-height: 85vh; /* Prevents modal from overflowing the viewport */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Keeps rounded corners clean */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e8ddcf;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+/* Header stays fixed at top */
+.paypal-header {
+  flex-shrink: 0;
+  background: #003087;
+  color: #ffffff;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Body scrolls smoothly when content exceeds max-height */
+.paypal-body {
+  padding: 1.5rem;
+  overflow-y: auto; /* Adds vertical scrolling */
+  flex: 1; /* Fills remaining space inside the modal */
+}
+
+/* Optional: Clean scrollbar styling for webkit browsers */
+.paypal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.paypal-body::-webkit-scrollbar-track {
+  background: #faf6f0;
+}
+
+.paypal-body::-webkit-scrollbar-thumb {
+  background: #e8ddcf;
+  border-radius: 3px;
+}
+
+.paypal-body::-webkit-scrollbar-thumb:hover {
+  background: #c85a32;
+}
+
+.btn-complete-pay:disabled {
+  background: #e5e5e5 !important;
+  color: #999999 !important;
+  border-color: #cccccc !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
   </style>
 </head>
 <body>
@@ -176,21 +275,63 @@
   </main>
 
   <!-- PAYPAL MODAL DIALOG -->
-  <div class="modal-overlay" id="paypalModal">
-    <div class="paypal-modal">
-      <div class="paypal-header">
-        <span class="paypal-logo">PayPal</span>
-        <button onclick="closePaypalModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
-      </div>
+  <!-- PAYPAL MODAL DIALOG -->
+<div class="modal-overlay" id="paypalModal">
+  <div class="paypal-modal">
+    <div class="paypal-header">
+      <span class="paypal-logo">PayPal</span>
+      <button onclick="closePaypalModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+    </div>
 
-      <div class="paypal-body">
-        <!-- Return to Merchant Information Box -->
+    <div class="paypal-body">
+
+      <!-- FORM WITH REQUIRED INPUT FIELDS -->
+      <form id="singleProductPaypalForm" onsubmit="handleSingleProductSubmit(event)">
+
+
+         <!-- Return to Merchant Information Box -->
         <div class="return-notice">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
           <div class="return-notice-text">
             <strong>Automatic Redirection Notice</strong>
-            Once your payment completes, please click <strong>"Return to Merchant"</strong> (or wait 5 seconds) to view your order confirmation and receipt.
+            <p style="margin: 0.3rem 0 0.5rem 0;">
+              Once your payment completes, please click <strong>"Return to Merchant"</strong> to view your order confirmation.
+            </p>
+            <label class="consent-checkbox-label" style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem;">
+              <input type="checkbox" id="returnConsentCheckbox" onchange="togglePayButton(this)" style="margin-top: 2px; cursor: pointer;">
+              <span>I understand </span>
+            </label>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" required placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+          <label for="residenceAddress">Residence Address</label>
+          <input type="text" id="residenceAddress" required placeholder="123 Main St, Apt 4B">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="postCode">Post Code</label>
+            <input type="text" id="postCode" required placeholder="10001">
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" required placeholder="+1 555-0199">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="payerId">Payer ID (Optional)</label>
+          <input type="text" id="payerId" placeholder="Leave blank if unknown">
         </div>
 
         <!-- Order Summary -->
@@ -209,12 +350,67 @@
           </div>
         </div>
 
-        <button class="btn-complete-pay" onclick="simulatePayment()">Complete Purchase</button>
-      </div>
+        <button type="submit" id="productPaySubmitBtn" class="btn-complete-pay" disabled>Complete Purchase</button>
+        <!-- <button type="submit" id="productPaySubmitBtn" class="btn-complete-pay">Complete Purchase</button> -->
+      </form>
     </div>
   </div>
+</div>
 
-  <script>
+<script>
+
+
+  function togglePayButton(checkbox) {
+    // Target the button in the current form/modal
+    const payBtn = checkbox.closest('form').querySelector('button[type="submit"]');
+    if (payBtn) {
+      payBtn.disabled = !checkbox.checked;
+    }
+  }
+  // Handle Single Product Form Submit & Supabase Route
+  async function handleSingleProductSubmit(event) {
+    event.preventDefault();
+    const btn = document.getElementById('productPaySubmitBtn');
+    btn.disabled = true;
+    btn.innerText = 'Processing Payment...';
+
+    const rawPrice = document.getElementById('modalItemPrice').innerText.replace('$', '');
+    const amount = parseFloat(rawPrice) || 0.00;
+    const transactionId = 'TXN-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+    const payload = {
+      transaction_id: transactionId,
+      payment_gateway: 'paypal',
+      amount: amount,
+      currency: 'USD',
+      payment_status: 'pending',
+      full_name: document.getElementById('fullName').value.trim(),
+      residence_address: document.getElementById('residenceAddress').value.trim(),
+      post_code: document.getElementById('postCode').value.trim(),
+      phone_number: document.getElementById('phoneNumber').value.trim(),
+      payer_id: document.getElementById('payerId').value.trim()
+    };
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('payment')
+        .insert([payload])
+        .select('id')
+        .single();
+
+      if (error) throw error;
+
+      alert('Order created successfully! Redirecting to PayPal...');
+      window.location.href = `https://teamgobuy25.github.io/return.html?id=${data.id}`;
+    } catch (err) {
+      alert('Payment submission failed: ' + err.message);
+      btn.disabled = false;
+      btn.innerText = 'Complete Purchase';
+    }
+  }
+</script>
+
+  <!-- <script>
     // 1. Extract URL Parameters from Store Page
     const params = new URLSearchParams(window.location.search);
     
@@ -261,6 +457,97 @@
       document.getElementById('mobileDrawer').classList.toggle('active', open);
       document.getElementById('drawerOverlay').classList.toggle('active', open);
     }
-  </script>
+  </script> -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // Supabase Client Setup
+  // const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+  // const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  // const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  
+  const SUPABASE_URL = 'https://tvpfajlxeyrsyiyzouun.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_9iv0K3P_84l2kt9DKpwyOg_unDJ4cSc';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  let currentProduct = null;
+
+  // 1. Fetch Product by ID from URL Parameters
+  async function fetchProductDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    if (!productId) {
+      console.warn('No product ID found in URL. Redirecting to store.');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('product')
+        .select('*')
+        .eq('id', productId)
+        .single();
+
+      if (error || !data) {
+        throw new Error(error ? error.message : 'Product not found');
+      }
+
+      currentProduct = data;
+      populatePageData(currentProduct);
+    } catch (err) {
+      console.error('Error loading product details:', err);
+      document.getElementById('productTitle').innerText = 'Product Not Found';
+      document.getElementById('productDesc').innerText = 'Unable to fetch the requested product from our store.';
+    }
+  }
+
+  // 2. Populate Page Elements & PayPal Data
+  function populatePageData(product) {
+    const formattedPrice = `$${parseFloat(product.price).toFixed(2)}`;
+
+    // Page Elements
+    document.getElementById('productTitle').innerText = product.name;
+    document.getElementById('breadTitle').innerText = product.name;
+    document.getElementById('productPrice').innerText = formattedPrice;
+    document.getElementById('productBrand').innerText = product.brand || 'AFRO TASTE SELECTION';
+    document.getElementById('productDesc').innerText = product.description || 'No description available for this item.';
+    
+    if (product.image) {
+      document.getElementById('productImg').src = product.image;
+      document.getElementById('productImg').alt = product.name;
+    }
+
+    // Modal Info & Hidden PayPal Input
+    document.getElementById('modalItemName').innerText = product.name;
+    document.getElementById('modalItemPrice').innerText = formattedPrice;
+
+    const paypalAmountInput = document.getElementById('paypalAmount');
+    if (paypalAmountInput) {
+      paypalAmountInput.value = parseFloat(product.price).toFixed(2);
+    }
+  }
+
+  // 3. Modal & Drawer Handlers
+  function openPaypalModal() {
+    document.getElementById('paypalModal').classList.add('active');
+  }
+
+  function closePaypalModal() {
+    document.getElementById('paypalModal').classList.remove('active');
+  }
+
+  function toggleMobileDrawer(open) {
+    document.getElementById('mobileDrawer').classList.toggle('active', open);
+    document.getElementById('drawerOverlay').classList.toggle('active', open);
+  }
+
+  // Initialize Product Page
+  document.addEventListener('DOMContentLoaded', fetchProductDetails);
+</script>
+
 </body>
 </html>

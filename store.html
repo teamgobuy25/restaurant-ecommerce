@@ -52,7 +52,10 @@
     @media (max-width: 768px) {
       .desktop-only { display: none !important; }
     }
+
   </style>
+  <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
@@ -114,64 +117,376 @@
     </div>
   </main>
 
-  <script>
-    let productsList = [];
 
-    // Fetch initial 20 products from API
-    async function loadStoreProducts() {
-      try {
-        const response = await fetch('http://localhost/Auto-Source/swiss/api.php?action=get_products&limit=20');
-        productsList = await response.json();
-        applyFilters();
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      }
-    }
+  <!-- CART SLIDE-OUT PANEL HTML STRUCTURE -->
+<div class="cart-drawer-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Your Basket</h3>
+    <button onclick="closeCartDrawer()" class="close-drawer-btn">✕</button>
+  </div>
+  
+  <div class="cart-drawer-body" id="cartItemsContainer">
+    <!-- Dynamic Cart Items Rendered Here -->
+  </div>
 
-    // Filter and Sort Handler
-    function applyFilters() {
-      const query = document.getElementById('storeSearchInput').value.toLowerCase();
-      const sortOrder = document.getElementById('sortOrder').value;
+  <div class="cart-drawer-footer">
+    <div class="cart-total-row">
+      <span>Total:</span>
+      <span id="cartDrawerTotal">CHF0.00</span>
+    </div>
+    <button class="btn-cart-checkout" onclick="openCartCheckoutModal()">Proceed to Checkout</button>
+  </div>
+</aside>
 
-      let filtered = productsList.filter(product => 
-        product.name.toLowerCase().includes(query) || 
-        (product.description && product.description.toLowerCase().includes(query))
-      );
+<!-- CART CHECKOUT PAYPAL MODAL -->
+<div class="modal-overlay" id="cartPaypalModal">
+  <div class="paypal-modal">
+    <div class="paypal-header">
+      <span class="paypal-logo">PayPal</span>
+      <button onclick="closeCartCheckoutModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+    </div>
 
-      filtered.sort((a, b) => {
-        return sortOrder === 'asc' 
-          ? a.name.localeCompare(b.name) 
-          : b.name.localeCompare(a.name);
-      });
+    <div class="paypal-body">
+      <div class="return-notice">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div class="return-notice-text">
+          <strong>Automatic Redirection Notice</strong>
+          Once your payment completes, please click <strong>"Return to Merchant"</strong> to log your order.
+        </div>
+      </div>
 
-      renderProducts(filtered);
-    }
+      <form id="cartPaypalForm" onsubmit="handleCartPaypalSubmit(event)">
+        <div class="form-group">
+          <label for="cartFullName">Full Name</label>
+          <input type="text" id="cartFullName" required placeholder="John Doe">
+        </div>
 
-    // Render cards and link to individual product.html?id=X page
-    function renderProducts(items) {
-      const grid = document.getElementById('productsGrid');
-      
-      if(items.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No products match your search criteria.</p>`;
-        return;
-      }
+        <div class="form-group">
+          <label for="cartResidenceAddress">Residence Address</label>
+          <input type="text" id="cartResidenceAddress" required placeholder="123 Main St, Apt 4B">
+        </div>
 
-      grid.innerHTML = items.map(product => `
-        <div class="product-card" onclick="window.location.href='product.html?id=${product.id}'">
-          <div class="product-thumb">
-            <img src="${product.image}" alt="${product.name}" loading="lazy">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cartPostCode">Post Code</label>
+            <input type="text" id="cartPostCode" required placeholder="10001">
           </div>
-          <div class="product-details">
-            <span class="product-brand">${product.brand || 'AFRO TASTE'}</span>
-            <h3 class="product-title">${product.name}</h3>
-            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+          <div class="form-group">
+            <label for="cartPhoneNumber">Phone Number</label>
+            <input type="tel" id="cartPhoneNumber" required placeholder="+1 555-0199">
           </div>
         </div>
-      `).join('');
+
+        <div class="form-group">
+          <label for="cartPayerId">E-mail</label>
+          <input type="text" id="customer-email" placeholder="example@gmail.com" required>
+        </div>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Items:</span>
+            <span id="cartModalItemCount">0 items</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span id="cartModalTotalPrice">CHF0.00</span>
+          </div>
+        </div>
+
+        <button type="submit" id="cartPaySubmitBtn" class="btn-complete-pay">Complete Purchase</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = 'https://tvpfajlxeyrsyiyzouun.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_9iv0K3P_84l2kt9DKpwyOg_unDJ4cSc';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+  let cart = JSON.parse(localStorage.getItem('afro_cart')) || [];
+
+
+  window.productsList = [];
+  let currentPage = 0;
+  const PAGE_SIZE = 50;
+  let hasMore = true;
+
+  // Load products on initial page load
+  async function loadStoreProducts() {
+    if (!hasMore) return;
+
+    try {
+      const from = currentPage * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data, error } = await supabaseClient
+        .from('product')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        window.productsList = [...window.productsList, ...data];
+        if (data.length < PAGE_SIZE) hasMore = false;
+        currentPage++;
+      } else {
+        hasMore = false;
+      }
+
+      applyFilters();
+    } catch (error) {
+      console.error('Failed to fetch products:', error.message || error);
+    }
+  }
+
+  // Filter and Sort Handler
+  function applyFilters() {
+    // Guard against execution before products array is defined
+    const sourceList = window.productsList || [];
+
+    const queryInput = document.getElementById('storeSearchInput');
+    const sortSelect = document.getElementById('sortOrder');
+
+    const query = queryInput ? queryInput.value.toLowerCase().trim() : '';
+    const sortOrder = sortSelect ? sortSelect.value : 'asc';
+
+    let filtered = sourceList.filter(product => 
+      (product.name && product.name.toLowerCase().includes(query)) || 
+      (product.description && product.description.toLowerCase().includes(query))
+    );
+
+    filtered.sort((a, b) => {
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      return sortOrder === 'asc' 
+        ? nameA.localeCompare(nameB) 
+        : nameB.localeCompare(nameA);
+    });
+
+    renderProducts(filtered);
+  }
+
+  // Initialize Store Page
+  document.addEventListener('DOMContentLoaded', loadStoreProducts);
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+  }
+
+// Render Product Cards with Image Click Routing & Add to Cart Action
+  function renderProducts(items) {
+    const grid = document.getElementById('productsGrid');
+    
+    if (items.length === 0) {
+      grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No products match your search criteria.</p>`;
+      updateLoadMoreButton(false);
+      return;
     }
 
-    // Initialize Store
-    document.addEventListener('DOMContentLoaded', loadStoreProducts);
-  </script>
+    grid.innerHTML = items.map(product => `
+      <div class="product-card">
+        <div class="product-thumb" onclick="window.location.href='product.html?id=${product.id}'" style="cursor:pointer;">
+          <img src="${product.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="${escapeHTML(product.name)}" loading="lazy">
+        </div>
+        <div class="product-details">
+          <span class="product-brand">${escapeHTML(product.brand || 'AFRO TASTE')}</span>
+          <h3 class="product-title" onclick="window.location.href='product.html?id=${product.id}'" style="cursor:pointer;">${escapeHTML(product.name)}</h3>
+          <div class="product-price">CHF${parseFloat(product.price).toFixed(2)}</div>
+          <button class="btn-add-cart" onclick="addToCart('${product.id}', '${escapeHTML(product.name)}', ${product.price}, '${product.image || ''}')" style="margin-top:10px; width:100%; padding:8px; background:#1A0F0D; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer;">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    updateLoadMoreButton(hasMore);
+  }
+
+  // Cart Drawer Logic
+  function addToCart(id, name, price, image) {
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id, name, price: parseFloat(price), image, qty: 1 });
+    }
+    saveAndRefreshCart();
+    openCartDrawer();
+  }
+
+  function saveAndRefreshCart() {
+    localStorage.setItem('afro_cart', JSON.stringify(cart));
+    const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+    const cartCountEl = document.getElementById('cartCount');
+    if (cartCountEl) cartCountEl.innerText = totalCount;
+    renderCartItems();
+  }
+
+
+function renderCartItems() {
+  const container = document.getElementById('cartItemsContainer');
+  const totalEl = document.getElementById('cartDrawerTotal');
+  
+  if (cart.length === 0) {
+    container.innerHTML = `<p style="text-align:center; padding:2rem; color:#666;">Your basket is empty.</p>`;
+    totalEl.innerText = '$0.00';
+    return;
+  }
+
+  let grandTotal = 0;
+  container.innerHTML = cart.map((item) => {
+    const itemTotal = item.price * item.qty;
+    grandTotal += itemTotal;
+    const fallbackImg = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
+
+    return `
+      <div class="cart-item" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid #eee;">
+        <div style="width:50px; height:50px; flex-shrink:0; border-radius:6px; overflow:hidden; background:#f4f4f4;">
+          <img src="${item.image || fallbackImg}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:0.9rem; color:#1A0F0D;">${item.name}</div>
+          <div style="font-size:0.8rem; color:#666;">Qty: ${item.qty} × $${item.price.toFixed(2)}</div>
+        </div>
+        <div style="font-weight:700; font-size:0.95rem; color:#1A0F0D;">$${itemTotal.toFixed(2)}</div>
+      </div>
+    `;
+  }).join('');
+
+  totalEl.innerText = `$${grandTotal.toFixed(2)}`;
+}
+
+  function openCartDrawer() {
+    document.getElementById('cartDrawer').classList.add('active');
+    document.getElementById('cartOverlay').classList.add('active');
+  }
+
+  function closeCartDrawer() {
+    document.getElementById('cartDrawer').classList.remove('active');
+    document.getElementById('cartOverlay').classList.remove('active');
+  }
+
+  function openCartCheckoutModal() {
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+    const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+    document.getElementById('cartModalItemCount').innerText = `${totalCount} item(s)`;
+    document.getElementById('cartModalTotalPrice').innerText = `$${grandTotal.toFixed(2)}`;
+
+    closeCartDrawer();
+    document.getElementById('cartPaypalModal').classList.add('active');
+  }
+
+  function closeCartCheckoutModal() {
+    document.getElementById('cartPaypalModal').classList.remove('active');
+  }
+
+
+
+  async function handleCartPaypalSubmit(event) {
+  event.preventDefault();
+  const btn = document.getElementById('cartPaySubmitBtn');
+  btn.disabled = true;
+  btn.innerText = 'Processing Payment...';
+
+  const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const orderNumber = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+  const fullName = document.getElementById('cartFullName').value.trim();
+  const residenceAddress = document.getElementById('cartResidenceAddress').value.trim();
+  const postCode = document.getElementById('cartPostCode').value.trim();
+  const phoneNumber = document.getElementById('cartPhoneNumber').value.trim();
+  const customerEmail= document.getElementById('customer-email').value.trim();
+
+  // Extract and comma-separate all unique product IDs from the cart
+  const productIds = cart.map(item => item.id).join(',');
+
+  // Map directly to your 'ooder' schema
+  const payload = {
+    order_number: orderNumber,
+    customer_name: fullName,
+    customer_phone: phoneNumber,
+    customer_email: customerEmail,
+    shipping_address: `${residenceAddress}, ${postCode}`,
+    product_id: productIds,
+    subtotal: grandTotal,
+    tax: 0.00,
+    shipping_fee: 0.00,
+    total_amount: grandTotal,
+    status: 'pending'
+  };
+
+  // console.log( "STORE", payload )
+  try {
+    // 1. Insert order into Supabase
+    const { data, error } = await supabaseClient
+      .from('order')
+      .insert([payload])
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    // 2. Clear local cart
+    cart = [];
+    if (typeof saveAndRefreshCart === 'function') {
+      saveAndRefreshCart();
+    }
+
+    // 3. Construct dynamic PayPal form and auto-submit
+    const paypalForm = document.createElement('form');
+    paypalForm.method = 'POST';
+    paypalForm.action = 'https://www.paypal.com/cgi-bin/webscr';
+
+    const fields = {
+      cmd: '_xclick',
+      business: 'uvictory35@gmail.com', // Replace with your merchant email
+      item_name: `AFRO TASTE Market Order #${data.id}`,
+      amount: grandTotal.toFixed(2),
+      currency_code: 'CHF',
+      return: '/return.html',
+      cancel_return: window.location.href,
+      custom: data.id, // Holds the database order ID
+      rm: '1'          // Returns HTTP POST/GET parameters to return URL
+    };
+
+    for (const [key, value] of Object.entries(fields)) {
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = key;
+      hiddenInput.value = value;
+      paypalForm.appendChild(hiddenInput);
+    }
+
+    document.body.appendChild(paypalForm);
+    paypalForm.submit();
+
+    // console.log( "STORE 2", payload )
+
+  } catch (err) {
+    alert('Checkout error: ' + err.message);
+    btn.disabled = false;
+    btn.innerText = 'Complete Purchase';
+  }
+}
+
+
+  document.addEventListener('DOMContentLoaded', saveAndRefreshCart);
+</script>
+
+
+
 </body>
 </html>
