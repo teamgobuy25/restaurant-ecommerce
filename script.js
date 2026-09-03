@@ -39,7 +39,7 @@ const DISHES = [
     name: 'Nigerian Egusi Soup with Pounded Yam',
     brand: 'NIGERIAN HERITAGE',
     category: 'nigerian',
-    price: 17.50,
+    price: 25.50,
     oldPrice: null,
     image: 'egusi2.jpeg',
     description: 'Rich melon seed soup cooked with spinach, stockfish, goat meat, and red palm oil, paired with fluffy, warm pounded yam.'

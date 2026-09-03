@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savanna Bites | Authentic African Kitchen & Gourmet Market</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <style>
+        /* CSS Root Variables for Theming & Design System */
+        :root {
+            --primary-color: #d97706; /* Rich Warm Amber */
+            --primary-hover: #b45309;
+            --secondary-color: #15803d; /* Lush Forest Green */
+            --accent-dark: #1c1917; /* Deep Charcoal/Warm Black */
+            --accent-light: #fffbeb; /* Soft Cream */
+            --surface-color: #ffffff;
+            --text-main: #292524;
+            --text-muted: #78716c;
+            --border-color: #e7e5e4;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-full: 9999px;
+            --transition-standard: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--accent-light);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Top Announcement Bar */
+        .top-bar {
+            background-color: var(--accent-dark);
+            color: var(--accent-light);
+            font-size: 0.85rem;
+            padding: 8px 0;
+            text-align: center;
+        }
+
+        .top-bar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar-info {
+            display: flex;
+            gap: 20px;
+        }
+
+        .top-bar-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-bar-info i {
+            color: var(--primary-color);
+        }
+
+        /* Header & Navigation Architecture */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-standard);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        /* Circular Logo Architecture */
+        .brand-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-circle {
+            width: 15em;
+            height: 15em;
+            border-radius: 100em;
+            align-items: center;
+            margin: 1em;
+            
+        }
+
+        .brand-text-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-dark);
+            line-height: 1.1;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Navigation Links */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: var(--transition-standard);
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition-standard);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* E-commerce Utility Components */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--accent-dark);
+            cursor: pointer;
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-standard);
+        }
+
+        .icon-btn:hover {
+            background-color: var(--accent-light);
+            color: var(--primary-color);
+        }
+
+        .badge-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .mobile-toggle {
+            display: none;
+        }
+
+        /* Hero Section Component */
+        .hero-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(255, 251, 235, 0.8) 0%, rgba(254, 243, 199, 0.5) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background-color: rgba(217, 119, 6, 0.15);
+            color: var(--primary-color);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.15;
+            color: var(--accent-dark);
+            margin-bottom: 20px;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-standard);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent-dark);
+            border: 2px solid var(--accent-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero-image-card {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-image-card img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+        }
+
+        /* Shipping & Delivery Feature Banner */
+        .shipping-features {
+            padding: 40px 0;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background-color: var(--accent-light);
+            transition: var(--transition-standard);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            background-color: rgba(217, 119, 6, 0.15);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-dark);
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* E-commerce Menu Section / Food Grid Architecture */
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 48px;
+        }
+
+        .section-subtitle {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--accent-dark);
+        }
+
+        /* 8-Card Grid Layout */
+        .grid-8 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        /* 4-Card Grid Layout */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        /* Food Card Component Design */
+        .food-card {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-standard);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .food-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(217, 119, 6, 0.3);
+        }
+
+        .food-img-wrapper {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .food-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-standard);
+        }
+
+        .food-card:hover .food-img {
+            transform: scale(1.08);
+        }
+
+        .food-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            z-index: 2;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-full);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-dark);
+            cursor: pointer;
+            transition: var(--transition-standard);
+            z-index: 2;
+        }
+
+        .wishlist-btn:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .food-details {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .food-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+
+        .food-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin-bottom: 8px;
+        }
+
+        .food-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .food-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .price-tag {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .add-cart-btn {
+            background-color: var(--accent-light);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 14px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition-standard);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .add-cart-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Parallax Scroll Section Component */
+        .parallax-section {
+            position: relative;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://img.sndimg.com/food/image/upload/q_92,fl_progressive,w_1200,c_scale/v1/img/recipes/44/54/47/UkXwrHEdQ7GY9oWZnRk3_authentic-west-african-jollof-rice-3447.jpg');
+            height: 400px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin: 40px 0;
+        }
+
+        .parallax-content {
+            max-width: 750px;
+            padding: 0 20px;
+        }
+
+        .parallax-title {
+            font-size: 3rem;
+            color: var(--accent-light);
+            margin-bottom: 16px;
+        }
+
+        .parallax-desc {
+            font-size: 1.2rem;
+            margin-bottom: 28px;
+            color: #e7e5e4;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            background-color: #fef3c7;
+            padding: 80px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background-color: var(--surface-color);
+            padding: 32px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .quote-icon {
+            font-size: 2rem;
+            color: rgba(217, 119, 6, 0.2);
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--accent-dark);
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Blog Section Component */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .blog-card {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-standard);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 24px;
+        }
+
+        .blog-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            color: var(--accent-dark);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .blog-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Interactive Live Map & Location Section */
+        .map-section {
+            padding: 80px 0;
+            background-color: var(--surface-color);
+        }
+
+        .map-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 32px;
+            background-color: var(--accent-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .map-info {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-list i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            margin-top: 4px;
+        }
+
+        #live-map {
+            width: 100%;
+            min-height: 400px;
+            z-index: 1;
+        }
+
+        /* Simple & Elegant Footer Section */
+        .site-footer {
+            background-color: var(--accent-dark);
+            color: #d6d3d1;
+            padding: 60px 0 20px;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-about .brand-title {
+            color: var(--surface-color);
+            margin-bottom: 8px;
+        }
+
+        .footer-about p {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #a8a29e;
+        }
+
+        .footer-heading {
+            font-size: 1.1rem;
+            color: var(--surface-color);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #a8a29e;
+            transition: var(--transition-standard);
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 4px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-full);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--surface-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-standard);
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .newsletter-form {
+            display: flex;
+            margin-top: 12px;
+        }
+
+        .newsletter-input {
+            padding: 10px 14px;
+            border-radius: var(--radius-full) 0 0 var(--radius-full);
+            border: 1px solid #44403c;
+            background-color: #292524;
+            color: white;
+            outline: none;
+            flex-grow: 1;
+            font-size: 0.85rem;
+        }
+
+        .newsletter-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 0 var(--radius-full) var(--radius-full) 0;
+            cursor: pointer;
+            transition: var(--transition-standard);
+        }
+
+        .newsletter-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .footer-bottom {
+            padding-top: 20px;
+            border-top: 1px solid #292524;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #78716c;
+        }
+
+        /* Mobile Responsiveness & Adaptive Viewports */
+        @media (max-width: 1024px) {
+            .grid-8 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                display: none; /* Hide topbar on small screens to prevent squishing */
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-cta-group {
+                justify-content: center;
+            }
+
+            /* Responsive Navigation Drawer */
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background-color: var(--surface-color);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 40px 20px;
+                gap: 24px;
+                transition: var(--transition-standard);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .grid-8, .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid, .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .map-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .parallax-section {
+                background-attachment: scroll; /* Mobile fallback for fixed backgrounds */
+            }
+        }
+
+        @media (max-width: 520px) {
+            .grid-8, .grid-4, .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .brand-title {
+                font-size: 1.1rem;
+            }
+
+            .logo-circle {
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-info">
+                <span><i class="fa-solid fa-phone"></i> +1 (800) 555-AFRI</span>
+                <span><i class="fa-solid fa-clock"></i> Open: 10:00 AM - 10:00 PM</span>
+            </div>
+            <div>
+                <span><i class="fa-solid fa-truck-fast"></i> Express Courier Delivery Available</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="container nav-container">
+            
+            <a href="#" class="brand-wrapper">
+                <div class="logo-circle">
+                    <img src="logo.png" alt="">
+                </div>
+                <div class="brand-text-block">
+                   
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#" class="nav-link active">Home</a></li>
+                    <li><a href="#store" class="nav-link">Store</a></li>
+                    <li><a href="#about" class="nav-link">About Us</a></li>
+                    <li><a href="#contact" class="nav-link">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button class="icon-btn" aria-label="Account"><i class="fa-regular fa-user"></i></button>
+                <button class="icon-btn" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="badge-count">3</span>
+                </button>
+                
+                <button class="icon-btn mobile-toggle" id="menu-toggle" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="container hero-grid">
+            <div>
+                <span class="hero-tag"><i class="fa-solid fa-fire"></i> Authentic Flavors & Heritage</span>
+                <h1 class="hero-title">Experience Rich Culinary Traditions of Africa</h1>
+                <p class="hero-description">Freshly prepared, spice-rich traditional dishes cooked with ancestral recipes and delivered right to your doorstep. Order online or visit our store.</p>
+                <div class="hero-cta-group">
+                    <a href="#store" class="btn btn-primary"><i class="fa-solid fa-utensils"></i> Order Online Now</a>
+                    <a href="#about" class="btn btn-secondary"><i class="fa-solid fa-circle-play"></i> Our Story</a>
+                </div>
+            </div>
+            <div class="hero-image-card">
+                <img src="hero.jfif" alt="African Food Feast">
+            </div>
+        </div>
+    </section>
+
+    <section class="shipping-features">
+        <div class="container features-grid">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                <div>
+                    <h4 class="feature-title">Express Local Delivery</h4>
+                    <p class="feature-desc">Hot food delivered under 45 minutes.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-box-open"></i></div>
+                <div>
+                    <h4 class="feature-title">Eco-Friendly Packaging</h4>
+                    <p class="feature-desc">100% sustainable thermal boxes.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div>
+                    <h4 class="feature-title">Contactless Delivery</h4>
+                    <p class="feature-desc">Safe and sanitary drop-offs.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+                <div>
+                    <h4 class="feature-title">Pantry Shipping</h4>
+                    <p class="feature-desc">Nationwide shipping for raw spices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" id="store">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Chef's Signature Menu</span>
+                <h2 class="section-title">Popular Dishes Available for Order</h2>
+            </div>
+
+            <div class="grid-8">
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <span class="food-badge">Bestseller</span>
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjiNoT4Pj0lu-KbSPikuByhhQFMbvPU6NTKOiGi45PpjzgZkwKxRnoAQqP&s=10" alt="Jollof Rice" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (120)</div>
+                        <h3 class="food-title">Smoky Jollof Rice</h3>
+                        <p class="food-desc">Long-grain rice cooked in rich tomato stew, served with fried plantains and grilled chicken.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$18.99</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKi9bUJQVA5J1PylfJ9CwEfd0lPfzenZQu87xczvbD6CGf2o430fzPRfU&s=10" alt="Egusi Soup" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (95)</div>
+                        <h3 class="food-title">Egusi Soup & Pounded Yam</h3>
+                        <p class="food-desc">Ground melon seed stew enriched with spinach, assorted meats, and velvety pounded yam.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$21.50</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <span class="food-badge">Spicy</span>
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtjcpqnOommgQ5XmpHD6xEVYMCwuwUjKvAMI1pt0nrVBrQCdIcsA2ZtDrc&s=10" alt="Suya Skewers" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 5.0 (210)</div>
+                        <h3 class="food-title">Beef Suya Skewers</h3>
+                        <p class="food-desc">Thinly sliced beef marinated in roasted peanut spice rub, grilled over open flames.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$14.00</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://explorers.kitchen/wp-content/uploads/2016/01/Mozambique-Piri-piri-chicken-10-of-11.jpg" alt="Peri Peri Chicken" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.7 (80)</div>
+                        <h3 class="food-title">Flame Peri Peri Chicken</h3>
+                        <p class="food-desc">Half chicken slow-roasted in bird's eye chili, garlic, and citrus marinade.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$19.50</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBJGyMYyCsobQtLdcb2OqJZ5C5uXrvPNrs6nF3AriF3Zn_vbwCu9nIthw&s=10" alt="Waakye" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (64)</div>
+                        <h3 class="food-title">Ghanian Waakye Plate</h3>
+                        <p class="food-desc">Rice and beans cooked with sorghum leaves, served with shito pepper, boiled egg, and spaghetti.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$17.00</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <span class="food-badge">Vegan Option</span>
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://t4.ftcdn.net/jpg/10/07/18/01/360_F_1007180141_1dey0wFoS4BQcw2lQQt7X0IainGXqGy4.jpg" alt="Kachumbari Salad" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.6 (42)</div>
+                        <h3 class="food-title">East African Kachumbari</h3>
+                        <p class="food-desc">Fresh tomato and onion salad infused with chili, cilantro, and freshly squeezed lime.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$9.50</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzv8nMDgcDDS2SrAYzLgqeezTMKBYUktFKb7usLqvnQQ&s=10" alt="Samosas" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (150)</div>
+                        <h3 class="food-title">Crispy Spiced Sambusa</h3>
+                        <p class="food-desc">Triangular pastry filled with minced spiced beef, green peas, and fragrant herbs (4 pcs).</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$8.99</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="food-card">
+                    <div class="food-img-wrapper">
+                        <button class="wishlist-btn"><i class="fa-regular fa-heart"></i></button>
+                        <img src="https://nicetartes.com/wp-content/uploads/2024/10/African-Puff-Puff.jpg" alt="Puff Puff" class="food-img">
+                    </div>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (115)</div>
+                        <h3 class="food-title">Golden Puff Puff</h3>
+                        <p class="food-desc">Sweet, pillowy deep-fried dough balls dusted with nutmeg and cinnamon sugar (8 pcs).</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$7.50</span>
+                            <button class="add-cart-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="parallax-section">
+        <div class="parallax-content">
+            <h2 class="parallax-title">Taste the Heritage in Every Bite</h2>
+            <p class="parallax-desc">We source our authentic herbs, spices, and ingredients directly from local West & East African farmers to guarantee absolute freshness and traditional taste.</p>
+            <a href="#store" class="btn btn-primary"><i class="fa-solid fa-utensils"></i> Reserve a Table or Order</a>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Pantry & Specialty Items</span>
+                <h2 class="section-title">Take Home Our Signature Ingredients</h2>
+            </div>
+
+            <div class="grid-4">
+                                <div class="food-card">
+    <a href="#item-ogbono" class="food-img-wrapper" title="View Ogbono Soup & Eba Details">
+        <span class="food-badge">Bestseller</span>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-9mLcXJ-FcLR5vePIn1AV3FkNHO04AJKcBS69bfrFDg&s=10" alt="Ogbono Soup & Eba" class="food-img">
+    </a>
+    <a href="#wishlist-add" class="wishlist-btn" title="Save to Wishlist" onclick="alert('Added Ogbono Soup to Wishlist!'); return false;">
+        <i class="fa-regular fa-heart"></i>
+    </a>
+    <div class="food-details">
+        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (112)</div>
+        <a href="#item-ogbono" class="food-title">Ogbono Soup & Yellow Eba</a>
+        <p class="food-desc">Silky wild mango seed soup cooked with stockfish, tripe, goat meat, and bitter leaf, served alongside warm, firm cassava garri (Eba).</p>
+        <div class="food-action-row">
+            <span class="price-tag">$20.50</span>
+            <a href="#cart-add-ogbono" class="add-cart-btn" onclick="alert('Added Ogbono Soup to Cart!'); return false;">
+                <i class="fa-solid fa-cart-plus"></i> Add
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="food-card">
+    <a href="#item-groundnut" class="food-img-wrapper" title="View Peanut/Groundnut Soup & Tuwo Details">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo31dFB1IFDFSfGWKCgKEuotVnAox9WRkbE-jDwHULAgbh1IvM_PAzGWBg&s=10" alt="Groundnut Soup & Tuwo Shinkafa" class="food-img">
+    </a>
+    <a href="#wishlist-add" class="wishlist-btn" title="Save to Wishlist" onclick="alert('Added Groundnut Soup to Wishlist!'); return false;">
+        <i class="fa-regular fa-heart"></i>
+    </a>
+    <div class="food-details">
+        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (88)</div>
+        <a href="#item-groundnut" class="food-title">African Groundnut Stew & Tuwo</a>
+        <p class="food-desc">A rich, savory roasted peanut broth simmered with garden eggs, tomatoes, and tender beef shank, served with soft rice swallow (Tuwo Shinkafa).</p>
+        <div class="food-action-row">
+            <span class="price-tag">$19.00</span>
+            <a href="#cart-add-groundnut" class="add-cart-btn" onclick="alert('Added Groundnut Soup to Cart!'); return false;">
+                <i class="fa-solid fa-cart-plus"></i> Add
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="food-card">
+    <a href="#item-okra" class="food-img-wrapper" title="View Seafood Okra & Amala Details">
+        <span class="food-badge">Chef's Choice</span>
+        <img src="https://wowloungecardiff.co.uk/wp-content/uploads/2025/02/WowLounge_AmalaWithSeafoodOkro-scaled.jpg" alt="Seafood Okra Soup & Amala" class="food-img">
+    </a>
+    <a href="#wishlist-add" class="wishlist-btn" title="Save to Wishlist" onclick="alert('Added Seafood Okra to Wishlist!'); return false;">
+        <i class="fa-regular fa-heart"></i>
+    </a>
+    <div class="food-details">
+        <div class="food-rating"><i class="fa-solid fa-star"></i> 5.0 (175)</div>
+        <a href="#item-okra" class="food-title">Seafood Okra Soup & Dark Amala</a>
+        <p class="food-desc">Fresh diced okra stew loaded with jumbo prawns, crabs, smoked fish, and locus beans (Iru), served with rich yam flour swallow (Amala isu).</p>
+        <div class="food-action-row">
+            <span class="price-tag">$24.00</span>
+            <a href="#cart-add-okra" class="add-cart-btn" onclick="alert('Added Seafood Okra to Cart!'); return false;">
+                <i class="fa-solid fa-cart-plus"></i> Add
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="food-card">
+    <a href="#item-banga" class="food-img-wrapper" title="View Delta Banga Soup & Starch Details">
+        <img src="https://i.ytimg.com/vi/twSh06aereY/sddefault.jpg" alt="Delta Banga Soup & Starch" class="food-img">
+    </a>
+    <a href="#wishlist-add" class="wishlist-btn" title="Save to Wishlist" onclick="alert('Added Banga Soup to Wishlist!'); return false;">
+        <i class="fa-regular fa-heart"></i>
+    </a>
+    <div class="food-details">
+        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (92)</div>
+        <a href="#item-banga" class="food-title">Delta Banga Soup & Yellow Starch</a>
+        <p class="food-desc">Aromatic palm fruit extract soup spiced with beletete leaves and oburunbebe stick, served with catfish, cow tail, and stretchy yellow starch.</p>
+        <div class="food-action-row">
+            <span class="price-tag">$22.50</span>
+            <a href="#cart-add-banga" class="add-cart-btn" onclick="alert('Added Banga Soup to Cart!'); return false;">
+                <i class="fa-solid fa-cart-plus"></i> Add
+            </a>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Wall of Love</span>
+                <h2 class="section-title">What Our Diners Say</h2>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-right quote-icon"></i>
+                    <p class="testimonial-text">"The Smoky Jollof Rice reminds me so much of home! Quick delivery, packaging kept the food hot, and the Suya was perfectly seasoned."</p>
+                    <div class="user-profile">
+                        <img src="https://i.ytimg.com/vi/tIjwSMTkRzI/maxresdefault.jpg" alt="Customer Avatar" class="user-avatar">
+                        <div>
+                            <h4 class="user-name">Amara Okafor</h4>
+                            <span class="user-role">Verified Buyer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-right quote-icon"></i>
+                    <p class="testimonial-text">"Top-tier African online food ordering experience! The website is slick, delivery tracking was precise, and the Egusi soup was sublime."</p>
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Customer Avatar" class="user-avatar">
+                        <div>
+                            <h4 class="user-name">David Mensah</h4>
+                            <span class="user-role">Food Critic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-right quote-icon"></i>
+                    <p class="testimonial-text">"I ordered pantry items like the Shito and Suya spice. They arrived carefully packaged within 2 days. Will definitely be a regular!"</p>
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" alt="Customer Avatar" class="user-avatar">
+                        <div>
+                            <h4 class="user-name">Sarah Jenkins</h4>
+                            <span class="user-role">Home Chef</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Stories & Recipes</span>
+                <h2 class="section-title">From Our Kitchen Blog</h2>
+            </div>
+
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <img src="https://weeatatlast.com/wp-content/uploads/2022/11/chicken-jollof-rice.jpg" alt="Blog Post" class="blog-img">
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Oct 12, 2025</span>
+                            <span><i class="fa-regular fa-clock"></i> 5 min read</span>
+                        </div>
+                        <h3 class="blog-title">The Secret Behind Authentic West African Jollof Rice</h3>
+                        <a href="#" class="blog-link">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5mRubZlnqzvQdCUma5XgezuBIMSr2j0rWXZa6WEttiGefnpfwYt0o79E&s=10" alt="Blog Post" class="blog-img">
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Nov 02, 2025</span>
+                            <span><i class="fa-regular fa-clock"></i> 4 min read</span>
+                        </div>
+                        <h3 class="blog-title">Exploring Suya: The Iconic Street Food Spice Blend</h3>
+                        <a href="#" class="blog-link">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXNriArEev8udydkM-rrWtwA7ZDNHj8V5I7pKWPgL5rs8q_AAWyp1UlIc&s=10" alt="Blog Post" class="blog-img">
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Dec 18, 2025</span>
+                            <span><i class="fa-regular fa-clock"></i> 6 min read</span>
+                        </div>
+                        <h3 class="blog-title">Health Benefits of Traditional African Plant-Based Stews</h3>
+                        <a href="#" class="blog-link">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="map-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Visit Our Kitchen</span>
+                <h2 class="section-title">Find Us & Live Location</h2>
+            </div>
+
+            <div class="map-wrapper">
+                <div class="map-info">
+                    <h3>Savanna Bites Headquarters</h3>
+                    <p>Drop by for dine-in or pickup orders directly from our main central kitchen.</p>
+                    <ul class="info-list">
+                        <li>
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <strong>Address:</strong><br>
+                                124 Cuisine Boulevard, Spice District, NY 10001
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-envelope"></i>
+                            <div>
+                                <strong>Email Us:</strong><br>
+                                orders@savannabites.com
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-phone"></i>
+                            <div>
+                                <strong>Call Center:</strong><br>
+                                +1 (800) 555-2374
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="live-map"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <div class="brand-wrapper">
+                        <div class="logo-circle">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <div class="brand-text-block">
+                            <span class="brand-title">Savanna Bites</span>
+                            <span class="brand-subtitle" style="color:#d97706;">African Kitchen</span>
+                        </div>
+                    </div>
+                    <p>Bringing authentic African culinary excellence straight to your home. Quality ingredients, heritage recipes, and reliable e-commerce delivery.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="social-icon" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#store">Online Store</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#">Catering Services</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Customer Care</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Refunds & Returns</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Subscribe to Offers</h4>
+                    <p style="font-size: 0.85rem; color: #a8a29e; margin-bottom: 12px;">Get 15% off your first online order!</p>
+                    <form class="newsletter-form" onsubmit="event.preventDefault();">
+                        <input type="email" placeholder="Enter your email" class="newsletter-input" required>
+                        <button type="submit" class="newsletter-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Savanna Bites African Kitchen. All rights reserved.</p>
+                <p><i class="fa-solid fa-lock"></i> SSL Encrypted Secure Checkout</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        // Interactive Mobile Drawer Navigation Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if(navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile nav menu when a link is clicked
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                if(icon) {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+
+        // Live Map Initialization using Leaflet OpenStreetMap Engine
+        document.addEventListener('DOMContentLoaded', () => {
+            // Latitude and Longitude for Central Location (Example: NY Location)
+            const lat = 40.7128;
+            const lng = -74.0060;
+
+            const map = L.map('live-map').setView([lat, lng], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Custom Marker Popup
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup('<b>Savanna Bites Kitchen</b><br>124 Cuisine Blvd.')
+                .openPopup();
+        });
+    </script>
+</body>
+</html>
