@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriHarvest Market | Authentic African Grocery Online</title>
+    
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Leaflet OpenStreetMap CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        /* CSS Design System */
+        :root {
+            --primary: #d97706;      /* Rich Ochre / Amber */
+            --primary-dark: #b45309;
+            --secondary: #15803d;    /* Deep Savannah Green */
+            --secondary-dark: #166534;
+            --accent: #9a3412;       /* Terracotta / Earth red */
+            --bg-light: #fefce8;     /* Soft Warm Cream */
+            --surface: #ffffff;
+            --text-dark: #1c1917;
+            --text-muted: #78716c;
+            --border-color: #e7e5e4;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 30px rgba(0,0,0,0.12);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-full: 9999px;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Top Announcement Bar */
+        .top-bar {
+            background-color: var(--accent);
+            color: #ffffff;
+            font-size: 0.85rem;
+            padding: 8px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Header Navigation */
+        .site-header {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        /* Circular Brand Logo */
+        .brand-logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        .brand-name span {
+            color: var(--primary);
+        }
+
+        /* Desktop Nav Menu */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-dark);
+            transition: var(--transition);
+            position: relative;
+            padding: 6px 0;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: var(--radius-full);
+        }
+
+        /* Header Actions (Search, Cart, User) */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            color: var(--primary);
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Hamburger Button */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        /* Hero Banner Section */
+        .hero {
+            position: relative;
+            background: linear-gradient(rgba(28, 25, 23, 0.65), rgba(28, 25, 23, 0.65)), url('https://ofoodiuk.com/wp-content/uploads/2023/06/trolley-in-grocery-store.webp') center/cover no-repeat;
+            padding: 120px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: #e7e5e4;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 36px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .hero-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Features/Shipping Info Bar */
+        .features-bar {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 30px 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--bg-light);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Section Headings */
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 50px;
+        }
+
+        .section-tag {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+        }
+
+        /* Product Cards Grid (8 Grid & 4 Grid) */
+        .products-grid-8 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .products-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .food-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .food-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(217, 119, 6, 0.3);
+        }
+
+        .food-img-wrapper {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            display: block;
+        }
+
+        .food-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .food-card:hover .food-img {
+            transform: scale(1.08);
+        }
+
+        .food-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            z-index: 2;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-full);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .wishlist-btn:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .food-details {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .food-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+
+        .food-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .food-title:hover {
+            color: var(--primary);
+        }
+
+        .food-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .food-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .price-tag {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .add-cart-btn {
+            background-color: var(--bg-light);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 14px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .add-cart-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Parallax Scroll Banner Section */
+        .parallax-section {
+            position: relative;
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1600&q=80');
+            height: 420px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+        }
+
+        .parallax-content {
+            max-width: 750px;
+        }
+
+        .parallax-title {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .parallax-desc {
+            font-size: 1.15rem;
+            color: #f3f4f6;
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        /* Customer Testimonials Section */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background-color: var(--surface);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quote-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Blog Section */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .blog-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-img-wrapper {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .blog-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .blog-card:hover .blog-img {
+            transform: scale(1.05);
+        }
+
+        .blog-body {
+            padding: 24px;
+        }
+
+        .blog-meta {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .blog-excerpt {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .blog-link {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Store Location & Interactive Map */
+        .location-section {
+            background-color: var(--surface);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .map-container {
+            height: 380px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        #store-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .location-info h3 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .info-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .info-item i {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+
+        /* Footer Section */
+        .site-footer {
+            background-color: var(--text-dark);
+            color: #d6d3d1;
+            padding-top: 70px;
+            padding-bottom: 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-brand p {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #a8a29e;
+            max-width: 320px;
+        }
+
+        .footer-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background-color: #292524;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .social-btn:hover {
+            background-color: var(--primary);
+        }
+
+        .newsletter-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .newsletter-input input {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #44403c;
+            background-color: #292524;
+            color: white;
+            flex-grow: 1;
+            font-size: 0.85rem;
+        }
+
+        .newsletter-input button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #292524;
+            padding-top: 24px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #78716c;
+        }
+
+        /* Mobile Responsiveness & Adaptive Layout */
+        @media (max-width: 1024px) {
+            .products-grid-8, .products-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid, .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background-color: var(--surface);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 40px;
+                transition: var(--transition);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero-title {
+                font-size: 2.3rem;
+            }
+
+            .parallax-title {
+                font-size: 2rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .products-grid-8, .products-grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-name {
+                font-size: 1.2rem;
+            }
+
+            .logo-circle {
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <i class="fa-solid fa-truck-fast"></i> Free Nationwide Express Shipping on Orders Over $75!
+        </div>
+    </div>
+
+    <!-- Website Header -->
+    <header class="site-header">
+        <div class="container nav-container">
+            
+            <!-- Circular Logo & Brand Name -->
+            <a href="#home" class="brand-logo-group">
+                <div class="logo-circle">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </div>
+                <div class="brand-name">Kings<span> Afro Foods</span></div>
+            </a>
+
+            <!-- Navigation Links -->
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#store" class="nav-link">Store</a></li>
+                <li><a href="#about" class="nav-link">About Us</a></li>
+                <li><a href="#contact" class="nav-link">Contact Us</a></li>
+            </ul>
+
+            <!-- E-Commerce Action Icons -->
+            <div class="header-actions">
+                <button class="icon-btn" title="Search Pantry" onclick="alert('Search functionality activated')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button class="icon-btn" title="Saved Wishlist" onclick="alert('Wishlist opened')">
+                    <i class="fa-regular fa-heart"></i>
+                    <span class="badge-count">2</span>
+                </button>
+                <button class="icon-btn" title="Shopping Cart" onclick="alert('Shopping Cart side panel opened')">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="badge-count">4</span>
+                </button>
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero" id="home">
+        <div class="container hero-content">
+            <span class="hero-subtitle">100% Authentic & Fresh</span>
+            <h1 class="hero-title">Bring the True Flavors of Africa to Your Kitchen</h1>
+            <p class="hero-desc">Sourced directly from organic African farms. Farm-fresh yams, hand-ground spices, golden palm oil, and traditional pantry staples delivered straight to your door.</p>
+            <a href="#store" class="hero-btn"><i class="fa-solid fa-bag-shopping"></i> Shop Pantry Essentials</a>
+        </div>
+    </section>
+
+    <!-- Shipping & Value Features Bar -->
+    <section class="features-bar">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-plane-arrival"></i></div>
+                    <div>
+                        <h4 class="feature-title">Fresh Imports</h4>
+                        <p class="feature-desc">Weekly air-freight deliveries</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div>
+                        <h4 class="feature-title">Secure Packaging</h4>
+                        <p class="feature-desc">Temperature preserved</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <h4 class="feature-title">24/7 Support</h4>
+                        <p class="feature-desc">Friendly customer service</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h4 class="feature-title">Guaranteed Quality</h4>
+                        <p class="feature-desc">100% money back guarantee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Grid 1: 8 African Grocery Food Cards (After Hero) -->
+    <section class="section-padding" id="store">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Essential Staples</span>
+                <h2 class="section-title">Popular Pantry Favorites</h2>
+            </div>
+
+            <div class="products-grid-8">
+
+                <!-- Card 1: Palm Oil -->
+                <div class="food-card">
+                    <a href="#item-palmoil" class="food-img-wrapper">
+                        <span class="food-badge">Pantry</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb5NoJyCzeQ6KBgJGJHRqYJ08fyZZqI5Aix0GsMr4lR-2rhM-k_TsD4ePp&s=10" alt="Pure Organic Red Palm Oil" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Red Palm Oil to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (42)</div>
+                        <a href="#item-palmoil" class="food-title">Pure Organic Red Palm Oil</a>
+                        <p class="food-desc">Unrefined, sustainably harvested red palm oil rich in antioxidants. The traditional cooking base for authentic African stews.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$10.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Red Palm Oil to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Ogbono Seeds -->
+                <div class="food-card">
+                    <a href="#item-ogbono" class="food-img-wrapper">
+                        <span class="food-badge">Fresh</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhpP_3D0IVAsDHKSQUK2D-RSnvkhYUHEu1EQOouDuXGqdH5yklnLBGlDle&s=10" alt="Ground Ogbono Seeds" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Ogbono Seeds to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (31)</div>
+                        <a href="#item-ogbono" class="food-title">Wild African Mango Seeds (Ogbono)</a>
+                        <p class="food-desc">Premium wild mango seeds milled fresh for thick, aromatic draw soups. Perfectly sun-dried without additives.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$14.50</span>
+                            <button class="add-cart-btn" onclick="alert('Added Ogbono Seeds to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Egusi Seeds -->
+                <div class="food-card">
+                    <a href="#item-egusi" class="food-img-wrapper">
+                        <span class="food-badge">Bestseller</span>
+                        <img src="https://i.ebayimg.com/images/g/DJsAAOSwncBl3l~n/s-l1200.jpg" alt="Handpeeled Egusi Melon Seeds" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Egusi Seeds to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 5.0 (89)</div>
+                        <a href="#item-egusi" class="food-title">Hand-Peeled Egusi Melon Seeds</a>
+                        <p class="food-desc">Grade-A melon seeds hand-hulled for optimal protein and flavor. Essential for rich Egusi soup preparations.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$12.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Egusi Seeds to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Ghanaian Gari -->
+                <div class="food-card">
+                    <a href="#item-gari" class="food-img-wrapper">
+                        <img src="https://theafricanmarket.com/cdn/shop/products/0171.png?v=1519839053" alt="Yellow Cassava Gari" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Gari to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.7 (55)</div>
+                        <a href="#item-gari" class="food-title">Crispy Yellow Cassava Gari</a>
+                        <p class="food-desc">Finely roasted cassava granules fortified with red palm oil. Excellent for Eba swallow or refreshing soaking.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$7.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Gari to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Suya Yaji Spice -->
+                <div class="food-card">
+                    <a href="#item-suya" class="food-img-wrapper">
+                        <span class="food-badge">Spicy</span>
+                        <img src="https://www.alhajisuya.com/cdn/shop/products/yaji-suya-spice-spices-553_900x.png?v=1661087293" alt="Suya Yaji Spice Mix" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Suya Spice to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (110)</div>
+                        <a href="#item-suya" class="food-title">Authentic Hausa Suya Spice (Yaji)</a>
+                        <p class="food-desc">Traditional roasted peanut blend with chili, ginger, garlic, and kuli-kuli powder. Fire up grilled meats at home.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$8.50</span>
+                            <button class="add-cart-btn" onclick="alert('Added Suya Spice to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Dried Crayfish -->
+                <div class="food-card">
+                    <a href="#item-crayfish" class="food-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfdQc7dQJJgX7Zh4WxA0QxK-BL0y01oZvLPcXnX-EFnFt4tKp3VjHEoU22&s=10" alt="Smoked Dried Crayfish" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Crayfish to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (28)</div>
+                        <a href="#item-crayfish" class="food-title">Smoked Oron Dried Fish</a>
+                        <p class="food-desc">Whole sun-dried and smoked coastal fish. Adds intense savory umami depth to Nigerian stews and Jollof rice.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$13.00</span>
+                            <button class="add-cart-btn" onclick="alert('Added Crayfish to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7: Pounded Yam Flour -->
+                <div class="food-card">
+                    <a href="#item-yamflour" class="food-img-wrapper">
+                        <span class="food-badge">Top Rated</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnGv9XaFc1JOlzVGIYjHM0TsahREzgkbCK76PabIjXx2mITs49y2qbWfo&s=10" alt="Pounded Yam Flour" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Yam Flour to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (140)</div>
+                        <a href="#item-yamflour" class="food-title">Iyan Instant Pounded Yam Flour</a>
+                        <p class="food-desc">100% pure dehydrated white yam flour. Prepares stretchy, smooth pounded yam in minutes without vigorous pounding.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$15.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Yam Flour to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8: Ghanaian Shito Pepper -->
+                <div class="food-card">
+                    <a href="#item-shito" class="food-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm1za_C0zcaFl6xSIR3Q1P6Sq5_R49b64nzPDw4bVMQh5h-eX3TZ04wUje&s=10" alt="Ghanaian Black Pepper Shito" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Shito Pepper to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (67)</div>
+                        <a href="#item-shito" class="food-title">Ghanaian Black Shito Sauce</a>
+                        <p class="food-desc">Slow-cooked hot chili oil paste infused with dried shrimp, fish, ginger, and aromatic spices. Perfect with Waakye.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$11.50</span>
+                            <button class="add-cart-btn" onclick="alert('Added Shito to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Scroll Effect Section -->
+    <section class="parallax-section">
+        <div class="parallax-content">
+            <h2 class="parallax-title">Taste the Tradition of Heritage Cooking</h2>
+            <p class="parallax-desc">From West African spice markets to East African grain harvests, we carefully hand-pick every ingredient to ensure authentic taste in every bite.</p>
+            <a href="#store" class="hero-btn"><i class="fa-solid fa-store"></i> Explore Full Pantry</a>
+        </div>
+    </section>
+
+    <!-- Product Grid 2: 4 African Swallow & Stew Special Cards (After Parallax) -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Chef's Selection</span>
+                <h2 class="section-title">Regional Soups & Swallows</h2>
+            </div>
+
+            <div class="products-grid-4">
+
+                <!-- Card 1: Banga Palm Fruit Paste -->
+                <div class="food-card">
+                    <a href="#item-banga" class="food-img-wrapper">
+                        <span class="food-badge">Specialty</span>
+                        <img src="https://mychopchop.myshopify.com/cdn/shop/products/mychopchop-first-leading-african-nigerian-ghanian-grocery-store-canada-shop-smart-do-more-best-5247_1200x1200_crop_center.jpg?v=1510816609" alt="Banga Palm Fruit Paste" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Banga Paste to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (34)</div>
+                        <a href="#item-banga" class="food-title">Concentrated Banga Palm Paste</a>
+                        <p class="food-desc">Rich palm fruit extract base for preparing traditional Delta Banga Soup or Ghanaian Ofe Akwu stew.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$11.00</span>
+                            <button class="add-cart-btn" onclick="alert('Added Banga Paste to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Plantain Flour -->
+                <div class="food-card">
+                    <a href="#item-plantain" class="food-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhpP_3D0IVAsDHKSQUK2D-RSnvkhYUHEu1EQOouDuXGqdH5yklnLBGlDle&s=10" alt="Unripe Plantain Flour" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Plantain Flour to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.8 (51)</div>
+                        <a href="#item-plantain" class="food-title">Organic Unripe Plantain Flour</a>
+                        <p class="food-desc">100% green plantain flour. A healthy, low-glycemic alternative swallow rich in dietary fiber.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$12.50</span>
+                            <button class="add-cart-btn" onclick="alert('Added Plantain Flour to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Dark Amala Flour -->
+                <div class="food-card">
+                    <a href="#item-amala" class="food-img-wrapper">
+                        <span class="food-badge">Traditional</span>
+                        <img src="https://24hoursmarket.com/wp-content/uploads/2026/06/1000199343.png" alt="Amala Isu Yam Flour" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Amala Flour to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 4.9 (78)</div>
+                        <a href="#item-amala" class="food-title">Dark Yam Peel Flour (Amala Isu)</a>
+                        <p class="food-desc">Sun-dried yoruba yam peel flour for authentic dark Amala swallow. Smooth texture and earthiness.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$13.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Amala Flour to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Whole Locust Beans -->
+                <div class="food-card">
+                    <a href="#item-iru" class="food-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQCMv33BqF4GAhD96JJgJX8wLaO9CNOdw8vxYa5AKVfTxkR9YQ2W1pad8&s=10" alt="Fermented Locust Beans Iru" class="food-img">
+                    </a>
+                    <button class="wishlist-btn" onclick="alert('Saved Locust Beans to Wishlist!'); return false;"><i class="fa-regular fa-heart"></i></button>
+                    <div class="food-details">
+                        <div class="food-rating"><i class="fa-solid fa-star"></i> 5.0 (46)</div>
+                        <a href="#item-iru" class="food-title">Dried Fermented Locust Beans (Iru)</a>
+                        <p class="food-desc">Aromatic fermented African locust bean seasoning. Imparts pungent, traditional savory depth to soups.</p>
+                        <div class="food-action-row">
+                            <span class="price-tag">$6.99</span>
+                            <button class="add-cart-btn" onclick="alert('Added Iru to Cart!'); return false;"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Testimonials Section -->
+    <section class="section-padding" style="background-color: var(--surface); border-top: 1px solid var(--border-color);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Community Feedback</span>
+                <h2 class="section-title">What Our Customers Say</h2>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"Finding fresh Ogbono seeds and genuine Nigerian Red Palm Oil was always hard until I found AfriHarvest. Fast delivery and the quality is unbeatable!"</p>
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Chioma Adebayo" class="user-avatar">
+                        <div>
+                            <div class="user-name">Chioma Adebayo</div>
+                            <div class="user-role">Verified Buyer • Houston, TX</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"The Suya Yaji spice mix tastes exactly like the street suya in Lagos. The vacuum packaging kept everything totally fresh during shipping."</p>
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Kwame Osei" class="user-avatar">
+                        <div>
+                            <div class="user-name">Kwame Osei</div>
+                            <div class="user-role">Verified Buyer • London, UK</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+                    <p class="testimonial-text">"Pounded yam used to take forever on weekends. The instant flour from AfriHarvest gives the exact smooth consistency in under 10 minutes!"</p>
+                    <div class="user-profile">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Amina Bello" class="user-avatar">
+                        <div>
+                            <div class="user-name">Amina Bello</div>
+                            <div class="user-role">Verified Buyer • Toronto, CA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="section-padding" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Recipes & Culture</span>
+                <h2 class="section-title">From Our Culinary Journal</h2>
+            </div>
+
+            <div class="blog-grid">
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAcYDuqgwiqeK88CFUd7B6wq316kV5udiMhgqFKx8vhHV2uwPtKbf13Co8&s=10" alt="Jollof Rice Recipe" class="blog-img">
+                    </a>
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-meta"><i class="fa-regular fa-calendar"></i> August 28, 2026</span>
+                        <h3 class="blog-title">The Secrets to Perfect Smoky Party Jollof Rice</h3>
+                        <p class="blog-excerpt">Discover the essential balance of scotch bonnet peppers, bay leaves, and wood-smoke aroma techniques.</p>
+                        <a href="#blog-1" class="blog-link">Read Full Recipe <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://radianthealthmag.com/wp-content/uploads/2015/01/Eba-11.jpg" alt="Egusi Soup Preparation" class="blog-img">
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-meta"><i class="fa-regular fa-calendar"></i> August 15, 2026</span>
+                        <h3 class="blog-title">A Guide to African Swallows: Fufu, Amala & Eba</h3>
+                        <p class="blog-excerpt">Learn the distinct origins, texture differences, and ideal soup pairings for every traditional African swallow.</p>
+                        <a href="#blog-2" class="blog-link">Read Full Guide <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <div class="blog-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQruskkXu0JkbEX2LmI0FC6jluYZFxESKqT7Q1ASxdMrir54TxCwWp-HFix&s=10" alt="African Spices" class="blog-img">
+                    </div>
+                    <div class="blog-body">
+                        <span class="blog-meta"><i class="fa-regular fa-calendar"></i> July 30, 2026</span>
+                        <h3 class="blog-title">Health Benefits of Unrefined Red Palm Oil & Locust Beans</h3>
+                        <p class="blog-excerpt">How traditional West African pantry staples provide essential carotenoids, antioxidants, and gut probiotics.</p>
+                        <a href="#blog-3" class="blog-link">Read Health Insights <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Live Leaflet Interactive Map Section -->
+    <section class="section-padding location-section" id="contact">
+        <div class="container">
+            <div class="location-grid">
+                <div class="location-info">
+                    <span class="section-tag">Visit Our Walk-in Store</span>
+                    <h3>Experience Our Physical Marketplace</h3>
+                    <p>In addition to our global web shop, visit our flagship storefront to explore fresh tubers, imported herbs, and live deli counters.</p>
+                    
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div><strong>Store Address:</strong><br>124 Heritage Harvest Way, Cultural District, NY 10001</div>
+                        </li>
+                        <li class="info-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <div><strong>Opening Hours:</strong><br>Monday – Saturday: 8:00 AM – 9:00 PM<br>Sunday: 10:00 AM – 6:00 PM</div>
+                        </li>
+                        <li class="info-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <div><strong>Direct Store Hotline:</strong><br>+1 (800) 458-AFRI (2374)</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Live Map Component -->
+                <div class="map-container">
+                    <div id="store-map"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple Modern E-Commerce Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                
+                <!-- Brand Info -->
+                <div class="footer-brand">
+                    <div class="brand-logo-group">
+                        <div class="logo-circle">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <div class="brand-name" style="color: white;">Kings<span style="color: var(--primary);">Afro Foods</span></div>
+                    </div>
+                    <p>Connecting families worldwide with authentic, ethically sourced African groceries, spices, and traditional food items.</p>
+                    <div class="social-links">
+                        <a href="#facebook" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#instagram" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#twitter" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#youtube" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Navigation -->
+                <div>
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#store">Pantry Store</a></li>
+                        <li><a href="#about">About Our Mission</a></li>
+                        <li><a href="#contact">Contact Store</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Care -->
+                <div>
+                    <h4 class="footer-title">Customer Care</h4>
+                    <ul class="footer-links">
+                        <li><a href="#shipping">Shipping Policy</a></li>
+                        <li><a href="#returns">Returns & Refunds</a></li>
+                        <li><a href="#faq">Order Tracking</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Subscription -->
+                <div>
+                    <h4 class="footer-title">Stay Connected</h4>
+                    <p style="font-size: 0.85rem; color: #a8a29e;">Subscribe to receive recipe updates, new shipment alerts, and special discounts.</p>
+                    <form onsubmit="event.preventDefault(); alert('Thank you for subscribing to AfriHarvest!');" class="newsletter-input">
+                        <input type="email" placeholder="Enter your email address..." required>
+                        <button type="submit">Join</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 AfriHarvest African Grocery Store. All rights reserved. Designed for authentic African food enthusiasts.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet OpenStreetMap JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Custom Interactive JS Script -->
+    <script>
+        // Mobile Navigation Toggle Menu Logic
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        mobileToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = mobileToggle.querySelector('i');
+            if(navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile nav menu when clicking links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileToggle.querySelector('i').classList.remove('fa-xmark');
+                mobileToggle.querySelector('i').classList.add('fa-bars');
+            });
+        });
+
+        // Initialize Live Leaflet Map for Physical Store
+        document.addEventListener("DOMContentLoaded", function() {
+            // Store location (Coordinates centered near flagship cultural district)
+            const storeLat = 40.748817;
+            const storeLng = -73.985428;
+
+            const map = L.map('store-map').setView([storeLat, storeLng], 14);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Custom Leaflet Marker Popup
+            L.marker([storeLat, storeLng]).addTo(map)
+                .bindPopup('<b>AfriHarvest Store</b><br>124 Heritage Harvest Way<br>Fresh Stock Daily!')
+                .openPopup();
+        });
+    </script>
+</body>
+</html>
