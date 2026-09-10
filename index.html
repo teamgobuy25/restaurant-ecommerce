@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Mobile Drawer */
+    .mobile-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .mobile-drawer-overlay.active { opacity: 1; visibility: visible; }
+    .mobile-drawer { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: #fff; z-index: 201; transition: 0.3s; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .mobile-drawer.active { right: 0; }
+    .mobile-nav-list { list-style: none; display: flex; flex-direction: column; gap: 1.25rem; font-weight: 700; font-size: 1.1rem; }
+    .mobile-nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
+  </style>
 </head>
 <body>
 
@@ -54,7 +64,7 @@
     </a>
 
     <!-- DESKTOP NAVIGATION LINKS -->
-    <nav class="main-nav">
+    <nav class="main-nav desktop-only">
       <ul class="nav-list">
         <li><a href="index.html" class="nav-link active">Home</a></li>
         <li><a href="store.html" class="nav-link">Store</a></li>
@@ -106,13 +116,13 @@
     <div class="search-wrapper" style="margin-bottom: 16px;">
       <input type="text" placeholder="Search Jollof, Injera, Suya..." style="width:100%;">
     </div>
-      <nav class="main-nav desktop-only">
-      <ul class="nav-list">
-        <li><a href="index.html" class="nav-link active">Home</a></li>
-        <li><a href="store.html" class="nav-link">Store</a></li>
-        <li><a href="about.html" class="nav-link">About</a></li>
-        <li><a href="contact.html" class="nav-link">Contact</a></li>
-      </ul>
+      <nav class="main-nav">
+      <ul class="mobile-nav-list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="store.html" style="color:var(--primary);">Store</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
     </nav>
   </div>
 </aside>
