@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="product-card">
           <div class="product-thumb" onclick="window.location.href='product.html?id=${product.id}'" style="cursor:pointer;">
             ${product.oldPrice ? `<span class="badge-discount">SAVE ${(100 - (product.price/product.oldPrice * 100)).toFixed(0)}%</span>` : ''}
-            <img src="${product.image}" alt="${product.name}" loading="lazy">
+            <img src="${product.image}" style="height: auto" alt="${product.name}" loading="lazy">
           </div>
           <div class="product-details">
             <span class="product-brand">${product.brand}</span>
